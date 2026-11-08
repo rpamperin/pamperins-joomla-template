@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="48" viewBox="0 0 220 48" role="img" aria-label="Pamperins Tech">
+  <!-- Placeholder logo. Replace /images/logo.svg with your real logo (any size, ~48px tall works best). -->
+  <rect x="2" y="4" width="40" height="40" rx="10" fill="#2ea8ff"/>
+  <path d="M15 34V14h8.5c4.7 0 7.5 2.6 7.5 6.6s-2.8 6.6-7.5 6.6H20V34z M20 23h3.2c2 0 3.1-.9 3.1-2.4s-1.1-2.4-3.1-2.4H20z" fill="#0b1d3a"/>
+  <text x="52" y="23" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="18" font-weight="800" fill="#ffffff">Pamperins</text>
+  <text x="52" y="41" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="3" fill="#2ea8ff">TECH</text>
+</svg>

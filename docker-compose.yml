@@ -1,0 +1,46 @@
+# Local Joomla 5 test site for the Pamperins template.
+#   docker compose up -d      -> http://localhost:8080  (admin: /administrator)
+#   docker compose down -v    -> remove everything, including the database
+services:
+  joomla:
+    image: joomla:5-php8.3-apache
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      JOOMLA_DB_HOST: db
+      JOOMLA_DB_USER: joomla
+      JOOMLA_DB_PASSWORD: joomla_local_pw
+      JOOMLA_DB_NAME: joomla
+      # Unattended install (local testing only — never reuse these on a live site)
+      JOOMLA_SITE_NAME: Pamperins Tech
+      JOOMLA_ADMIN_USER: Site Admin
+      JOOMLA_ADMIN_USERNAME: admin
+      JOOMLA_ADMIN_PASSWORD: LocalTestPass123!
+      JOOMLA_ADMIN_EMAIL: admin@example.com
+    volumes:
+      - joomla_data:/var/www/html
+      - ./:/project:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: joomla
+      MYSQL_USER: joomla
+      MYSQL_PASSWORD: joomla_local_pw
+      MYSQL_ROOT_PASSWORD: root_local_pw
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_local_pw"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  joomla_data:
+  db_data:

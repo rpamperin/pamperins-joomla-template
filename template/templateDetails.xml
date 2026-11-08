@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="template" client="site" method="upgrade">
+	<name>pamperins</name>
+	<version>1.0.0</version>
+	<creationDate>2026-11</creationDate>
+	<author>Pamperins Tech</author>
+	<authorUrl>https://pamperins.com</authorUrl>
+	<copyright>(C) 2026 Pamperins Tech</copyright>
+	<license>GNU General Public License version 2 or later</license>
+	<description>TPL_PAMPERINS_XML_DESCRIPTION</description>
+	<inheritable>0</inheritable>
+	<parent>cassiopeia</parent>
+	<scriptfile>script.php</scriptfile>
+	<files>
+		<filename>index.php</filename>
+		<filename>script.php</filename>
+		<filename>templateDetails.xml</filename>
+		<folder>html</folder>
+	</files>
+	<media destination="templates/site/pamperins" folder="media">
+		<folder>css</folder>
+		<folder>fonts</folder>
+		<folder>images</folder>
+	</media>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/tpl_pamperins.ini</language>
+		<language tag="en-GB">en-GB/tpl_pamperins.sys.ini</language>
+	</languages>
+	<positions>
+		<position>topbar</position>
+		<position>menu</position>
+		<position>pt-services</position>
+		<position>pt-why</position>
+		<position>banner</position>
+		<position>top-a</position>
+		<position>top-b</position>
+		<position>main-top</position>
+		<position>main-bottom</position>
+		<position>breadcrumbs</position>
+		<position>sidebar-left</position>
+		<position>sidebar-right</position>
+		<position>bottom-a</position>
+		<position>bottom-b</position>
+		<position>footer</position>
+		<position>debug</position>
+		<position>error-403</position>
+		<position>error-404</position>
+	</positions>
+	<config>
+		<fields name="params">
+			<fieldset name="advanced">
+				<field name="brand" type="radio" label="TPL_CASSIOPEIA_BRAND_LABEL" default="1" layout="joomla.form.field.radio.switcher" filter="options">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="logoFile" type="media" schemes="http,https,ftp,ftps,data,file" validate="url" relative="true" default="images/logo.svg" label="TPL_CASSIOPEIA_LOGO_LABEL" showon="brand:1" />
+				<field name="stickyHeader" type="radio" label="TPL_CASSIOPEIA_STICKY_LABEL" layout="joomla.form.field.radio.switcher" default="1" filter="integer">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="backTop" type="radio" label="TPL_CASSIOPEIA_BACKTOTOP_LABEL" layout="joomla.form.field.radio.switcher" default="1" filter="integer">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+			</fieldset>
+
+			<fieldset name="header" label="TPL_PAMPERINS_FIELDSET_HEADER">
+				<field name="helpLabel" type="text" default="Get Help Now" label="TPL_PAMPERINS_HELP_LABEL" filter="string" />
+				<field name="helpUrl" type="text" default="get-help" label="TPL_PAMPERINS_HELP_URL" description="TPL_PAMPERINS_HELP_URL_DESC" filter="string" />
+				<field name="loginLabel" type="text" default="Customer Login" label="TPL_PAMPERINS_LOGIN_LABEL" filter="string" />
+				<field name="loginUrl" type="text" default="index.php?option=com_users&amp;view=login" label="TPL_PAMPERINS_LOGIN_URL" filter="string" />
+			</fieldset>
+
+			<fieldset name="home" label="TPL_PAMPERINS_FIELDSET_HOME">
+				<field name="heroShow" type="radio" label="TPL_PAMPERINS_HERO_SHOW" layout="joomla.form.field.radio.switcher" default="1" filter="integer">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="heroEyebrow" type="text" default="Locally owned IT services · Green Bay &amp; Appleton, WI" label="TPL_PAMPERINS_HERO_EYEBROW" filter="string" showon="heroShow:1" />
+				<field name="heroTitle" type="text" default="Tech help that shows up — on site or in minutes, remotely." label="TPL_PAMPERINS_HERO_TITLE" filter="string" showon="heroShow:1" />
+				<field name="heroText" type="textarea" rows="3" default="Pamperins Tech keeps Northeast Wisconsin homes and small businesses running: fast remote support, solid networks, real security, and websites that work." label="TPL_PAMPERINS_HERO_TEXT" filter="string" showon="heroShow:1" />
+				<field name="bookingLabel" type="text" default="Book an Appointment" label="TPL_PAMPERINS_BOOKING_LABEL" filter="string" showon="heroShow:1" />
+				<field name="bookingUrl" type="text" default="#book" label="TPL_PAMPERINS_BOOKING_URL" description="TPL_PAMPERINS_BOOKING_URL_DESC" filter="string" showon="heroShow:1" />
+				<field name="remoteLabel" type="text" default="Start Remote Support" label="TPL_PAMPERINS_REMOTE_LABEL" filter="string" showon="heroShow:1" />
+				<field name="remoteUrl" type="text" default="#remote-support" label="TPL_PAMPERINS_REMOTE_URL" description="TPL_PAMPERINS_REMOTE_URL_DESC" filter="string" showon="heroShow:1" />
+			</fieldset>
+
+			<fieldset name="footer" label="TPL_PAMPERINS_FIELDSET_FOOTER">
+				<field name="phone" type="text" default="(920) 555-0100" label="TPL_PAMPERINS_PHONE" filter="string" />
+				<field name="email" type="text" default="help@pamperins.com" label="TPL_PAMPERINS_EMAIL" filter="string" />
+				<field name="serviceArea" type="textarea" rows="2" default="Green Bay, Appleton &amp; the Fox Valley, WI" label="TPL_PAMPERINS_AREA" filter="string" />
+				<field name="hours" type="textarea" rows="3" default="Mon–Fri: 8am – 6pm&#10;Sat: 9am – 1pm&#10;Emergency support by appointment" label="TPL_PAMPERINS_HOURS" description="TPL_PAMPERINS_HOURS_DESC" filter="string" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>
