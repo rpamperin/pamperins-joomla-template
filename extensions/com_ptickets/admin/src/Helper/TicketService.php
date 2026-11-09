@@ -12,7 +12,6 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseInterface;
@@ -46,6 +45,7 @@ final class TicketService
      */
     public static function create(User $user, array $data): object
     {
+        SupportTypes::loadSiteLanguage(); // e-mail wording lives in the site language file
         $db  = self::db();
         $now = Factory::getDate()->toSql();
 
@@ -90,6 +90,7 @@ final class TicketService
 
     public static function addReply(object $ticket, User $author, string $body, bool $internal, bool $fromStaff): object
     {
+        SupportTypes::loadSiteLanguage(); // also needed when staff reply from the admin
         $db    = self::db();
         $reply = (object) [
             'ticket_id' => (int) $ticket->id,
@@ -226,12 +227,12 @@ final class TicketService
 
         try {
             $app    = Factory::getApplication();
-            $mailer = Factory::getMailer();
+            $mailer = Factory::getContainer()->get(\Joomla\CMS\Mail\MailerFactoryInterface::class)->createMailer();
             $mailer->setSender([$app->get('mailfrom'), $app->get('fromname')]);
             $mailer->addRecipient($to);
             $mailer->setSubject($subject);
             $mailer->setBody($body);
-            $mailer->Send();
+            $mailer->send();
         } catch (\Throwable $e) {
             // Mail problems are logged by Joomla; the ticket is already saved.
         }

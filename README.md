@@ -1,4 +1,4 @@
-# Pamperins Tech — Joomla 5 template
+# Pamperins Tech — Joomla 6 template (also works on Joomla 5)
 
 A child template of Cassiopeia for **pamperins.com** (locally owned IT services, Green Bay & Appleton, WI).
 
@@ -47,7 +47,7 @@ screenshots/                  desktop and phone renders from the local test
 docker compose up -d
 ```
 
-Open http://localhost:8080. The admin is at http://localhost:8080/administrator (`admin` / `LocalTestPass123!`, for local use only).
+Open http://localhost:8080 (Joomla 6.2, the same version as the live server). Test e-mails show up at http://localhost:8025. The admin is at http://localhost:8080/administrator (`admin` / `LocalTestPass123!`, for local use only).
 
 ```bash
 cp pamperins-template.zip /tmp/ && docker compose cp /tmp/pamperins-template.zip joomla:/var/www/html/tmp/
