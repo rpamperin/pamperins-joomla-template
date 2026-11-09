@@ -78,8 +78,41 @@ function remoteSupport(DatabaseInterface $db, string $now): void
     echo "Added Remote Support page (article $id).\n";
 }
 
+
+/** Support ticket pages (needs the com_ptickets extension installed). */
+function supportTickets(DatabaseInterface $db): void
+{
+    $component = ComponentHelper::getComponent('com_ptickets', true);
+
+    if (!$component->id || (int) $db->setQuery("SELECT COUNT(*) FROM #__menu WHERE alias='request-support' AND client_id=0")->loadResult()) {
+        return;
+    }
+
+    $after = (int) $db->setQuery("SELECT id FROM #__menu WHERE alias='remote-support' AND client_id=0")->loadResult();
+
+    foreach ([['Request Support', 'request-support', 'request', 1], ['My Tickets', 'my-tickets', 'tickets', 0]] as [$title, $alias, $view, $show]) {
+        $m = new Menu($db);
+        $m->setLocation($after ?: 1, $after ? 'after' : 'last-child');
+        $m->bind([
+            'menutype' => 'mainmenu', 'title' => $title, 'alias' => $alias,
+            'link' => 'index.php?option=com_ptickets&view=' . $view, 'type' => 'component',
+            'published' => 1, 'parent_id' => 1, 'level' => 1, 'component_id' => (int) $component->id,
+            'access' => 1, 'client_id' => 0, 'language' => '*', 'template_style_id' => 0, 'img' => '',
+            'params' => json_encode(['menu_show' => $show]),
+        ]);
+        ($m->check() && $m->store()) or die("Menu $title failed: " . $m->getError());
+        $m->rebuildPath($m->id);
+        $after = (int) $m->id;
+    }
+
+    // Local testing: no activation e-mail needed for new accounts
+    $db->setQuery("UPDATE #__extensions SET params=JSON_SET(params,'$.useractivation','0') WHERE element='com_users'")->execute();
+    echo "Added support ticket menu items.\n";
+}
+
 if ($exists("SELECT COUNT(*) FROM #__menu WHERE alias='pricing' AND client_id=0")) {
     remoteSupport($db, $now);
+    supportTickets($db);
     echo "Already seeded.\n";
     exit(0);
 }
@@ -155,6 +188,7 @@ foreach ($items as [$title, $alias, $link, $component, $show]) {
 }
 
 remoteSupport($db, $now);
+supportTickets($db);
 
 // Main menu module -> header "menu" position, collapsible layout; hide sidebar login form
 $db->setQuery("UPDATE #__modules SET position='menu', showtitle=0, params=JSON_SET(params,'$.layout','cassiopeia:collapse-metismenu') WHERE id=1")->execute();
@@ -165,7 +199,7 @@ $db->setQuery("UPDATE #__template_styles SET home='0' WHERE client_id=0")->execu
 $db->setQuery("UPDATE #__template_styles SET home='1' WHERE client_id=0 AND template='pamperins'")->execute();
 
 // Allow customer registration so the registration view can be tested
-$db->setQuery("UPDATE #__extensions SET params=JSON_SET(params,'$.allowUserRegistration','1','$.useractivation','1') WHERE element='com_users'")->execute();
+$db->setQuery("UPDATE #__extensions SET params=JSON_SET(params,'$.allowUserRegistration','1') WHERE element='com_users'")->execute();
 
 // Friendly URLs work out of the box with the Apache image if .htaccess exists
 if (!is_file(JPATH_ROOT . '/.htaccess')) {

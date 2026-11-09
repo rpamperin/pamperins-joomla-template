@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="details">
+		<fieldset name="details" label="COM_PTICKETS_FIELDSET_DETAILS">
+			<field name="setting" type="radio" label="COM_PTICKETS_F_AUTO_SETTING" default="home" layout="joomla.form.field.radio.buttons" validate="options">
+				<option value="home">COM_PTICKETS_O_AUTO_HOME</option>
+				<option value="industrial">COM_PTICKETS_O_AUTO_INDUSTRIAL</option>
+			</field>
+			<field name="systems" type="checkboxes" label="COM_PTICKETS_F_AUTO_SYSTEMS">
+				<option value="lights">COM_PTICKETS_O_AUTO_LIGHTS</option>
+				<option value="security">COM_PTICKETS_O_AUTO_SECURITY</option>
+				<option value="climate">COM_PTICKETS_O_AUTO_CLIMATE</option>
+				<option value="homeassistant">Home Assistant</option>
+				<option value="plc">COM_PTICKETS_O_AUTO_PLC</option>
+				<option value="sensors">COM_PTICKETS_O_AUTO_SENSORS</option>
+				<option value="other">COM_PTICKETS_O_OTHER</option>
+			</field>
+			<field name="equipment" type="textarea" rows="2" label="COM_PTICKETS_F_AUTO_EQUIPMENT" hint="COM_PTICKETS_F_AUTO_EQUIPMENT_HINT" filter="string" />
+			<field name="city" type="text" label="COM_PTICKETS_F_AUTO_LOCATION" filter="string" maxlength="120" />
+			<field name="budget" type="list" label="COM_PTICKETS_F_BUDGET" validate="options">
+				<option value="unsure">COM_PTICKETS_O_NOT_SURE</option>
+				<option value="lt1k">COM_PTICKETS_O_BUDGET_1</option>
+				<option value="1-3k">COM_PTICKETS_O_BUDGET_2</option>
+				<option value="3-10k">COM_PTICKETS_O_BUDGET_3</option>
+				<option value="10k+">COM_PTICKETS_O_BUDGET_4</option>
+			</field>
+			<field name="deadline" type="text" label="COM_PTICKETS_F_DEADLINE" filter="string" maxlength="100" />
+		</fieldset>
+	</fields>
+</form>

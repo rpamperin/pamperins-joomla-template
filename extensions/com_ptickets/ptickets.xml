@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="component" method="upgrade">
+	<name>com_ptickets</name>
+	<version>1.0.0</version>
+	<creationDate>2026-11</creationDate>
+	<author>Pamperins Tech</author>
+	<authorUrl>https://pamperins.com</authorUrl>
+	<copyright>(C) 2026 Pamperins Tech</copyright>
+	<license>GNU General Public License version 2 or later</license>
+	<description>COM_PTICKETS_XML_DESCRIPTION</description>
+	<namespace path="src">Pamperins\Component\Ptickets</namespace>
+
+	<install>
+		<sql><file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file></sql>
+	</install>
+	<uninstall>
+		<sql><file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file></sql>
+	</uninstall>
+	<update>
+		<schemas><schemapath type="mysql">sql/updates/mysql</schemapath></schemas>
+	</update>
+
+	<files folder="site">
+		<folder>forms</folder>
+		<folder>src</folder>
+		<folder>tmpl</folder>
+	</files>
+	<languages folder="site/language">
+		<language tag="en-GB">en-GB/com_ptickets.ini</language>
+	</languages>
+
+	<administration>
+		<menu img="class:life-ring">COM_PTICKETS</menu>
+		<submenu>
+			<menu link="option=com_ptickets&amp;view=tickets" view="tickets">COM_PTICKETS_SUBMENU_TICKETS</menu>
+		</submenu>
+		<files folder="admin">
+			<filename>access.xml</filename>
+			<filename>config.xml</filename>
+			<folder>forms</folder>
+			<folder>services</folder>
+			<folder>sql</folder>
+			<folder>src</folder>
+			<folder>tmpl</folder>
+		</files>
+		<languages folder="admin/language">
+			<language tag="en-GB">en-GB/com_ptickets.ini</language>
+			<language tag="en-GB">en-GB/com_ptickets.sys.ini</language>
+		</languages>
+	</administration>
+</extension>

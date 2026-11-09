@@ -1,4 +1,5 @@
+*.zip
+*~
+.DS_Store
 pamperins-template.zip
 screenshots/*.tmp
-.DS_Store
-*~

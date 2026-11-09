@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="filter">
+		<field name="search" type="text" inputmode="search" label="COM_PTICKETS_FILTER_SEARCH" hint="COM_PTICKETS_FILTER_SEARCH_HINT" />
+		<field name="status" type="list" label="COM_PTICKETS_FIELD_STATUS" onchange="this.form.submit();">
+			<option value="active">COM_PTICKETS_FILTER_ACTIVE</option>
+			<option value="*">COM_PTICKETS_FILTER_ALL</option>
+			<option value="new">COM_PTICKETS_STATUS_NEW</option>
+			<option value="open">COM_PTICKETS_STATUS_OPEN</option>
+			<option value="waiting">COM_PTICKETS_STATUS_WAITING</option>
+			<option value="scheduled">COM_PTICKETS_STATUS_SCHEDULED</option>
+			<option value="resolved">COM_PTICKETS_STATUS_RESOLVED</option>
+			<option value="closed">COM_PTICKETS_STATUS_CLOSED</option>
+		</field>
+		<field name="type" type="list" label="COM_PTICKETS_FIELD_TYPE" onchange="this.form.submit();">
+			<option value="">COM_PTICKETS_FILTER_ANY_TYPE</option>
+			<option value="remote">COM_PTICKETS_TYPE_REMOTE</option>
+			<option value="onsite">COM_PTICKETS_TYPE_ONSITE</option>
+			<option value="network">COM_PTICKETS_TYPE_NETWORK</option>
+			<option value="website">COM_PTICKETS_TYPE_WEBSITE</option>
+			<option value="software">COM_PTICKETS_TYPE_SOFTWARE</option>
+			<option value="ai">COM_PTICKETS_TYPE_AI</option>
+			<option value="automation">COM_PTICKETS_TYPE_AUTOMATION</option>
+		</field>
+		<field name="priority" type="list" label="COM_PTICKETS_FIELD_PRIORITY_STAFF" onchange="this.form.submit();">
+			<option value="">COM_PTICKETS_FILTER_ANY_PRIORITY</option>
+			<option value="urgent">COM_PTICKETS_PRIORITY_URGENT</option>
+			<option value="high">COM_PTICKETS_PRIORITY_HIGH</option>
+			<option value="normal">COM_PTICKETS_PRIORITY_NORMAL</option>
+			<option value="low">COM_PTICKETS_PRIORITY_LOW</option>
+		</field>
+	</fields>
+	<fields name="list">
+		<field name="fullordering" type="list" label="JGLOBAL_SORT_BY" onchange="this.form.submit();" default="t.created DESC" validate="options">
+			<option value="t.created DESC">COM_PTICKETS_SORT_NEWEST</option>
+			<option value="t.created ASC">COM_PTICKETS_SORT_OLDEST</option>
+			<option value="t.priority DESC">COM_PTICKETS_SORT_PRIORITY</option>
+			<option value="t.modified DESC">COM_PTICKETS_SORT_UPDATED</option>
+		</field>
+		<field name="limit" type="limitbox" label="JGLOBAL_LIST_LIMIT" default="25" onchange="this.form.submit();" />
+	</fields>
+</form>

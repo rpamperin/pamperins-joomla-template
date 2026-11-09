@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="manage">
+		<field name="id" type="hidden" />
+		<field name="status" type="list" label="COM_PTICKETS_FIELD_STATUS" validate="options" class="form-select-color-state">
+			<option value="new">COM_PTICKETS_STATUS_NEW</option>
+			<option value="open">COM_PTICKETS_STATUS_OPEN</option>
+			<option value="waiting">COM_PTICKETS_STATUS_WAITING</option>
+			<option value="scheduled">COM_PTICKETS_STATUS_SCHEDULED</option>
+			<option value="resolved">COM_PTICKETS_STATUS_RESOLVED</option>
+			<option value="closed">COM_PTICKETS_STATUS_CLOSED</option>
+		</field>
+		<field name="priority" type="list" label="COM_PTICKETS_FIELD_PRIORITY_STAFF" validate="options">
+			<option value="low">COM_PTICKETS_PRIORITY_LOW</option>
+			<option value="normal">COM_PTICKETS_PRIORITY_NORMAL</option>
+			<option value="high">COM_PTICKETS_PRIORITY_HIGH</option>
+			<option value="urgent">COM_PTICKETS_PRIORITY_URGENT</option>
+		</field>
+		<field name="assigned_to" type="user" label="COM_PTICKETS_FIELD_ASSIGNED" filter="integer" />
+	</fieldset>
+	<fieldset name="reply">
+		<field name="reply" type="textarea" label="COM_PTICKETS_FIELD_REPLY" description="COM_PTICKETS_FIELD_REPLY_DESC" rows="6" filter="string" />
+		<field name="reply_internal" type="checkbox" label="COM_PTICKETS_FIELD_INTERNAL" description="COM_PTICKETS_FIELD_INTERNAL_DESC" value="1" />
+	</fieldset>
+</form>

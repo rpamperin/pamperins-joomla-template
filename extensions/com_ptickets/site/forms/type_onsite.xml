@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="details">
+		<fieldset name="details" label="COM_PTICKETS_FIELDSET_DETAILS">
+			<field name="work" type="list" label="COM_PTICKETS_F_WORK" required="true" validate="options">
+				<option value="">JSELECT</option>
+				<option value="repair">COM_PTICKETS_O_REPAIR</option>
+				<option value="setup">COM_PTICKETS_O_SETUP</option>
+				<option value="network">COM_PTICKETS_O_NETWORK</option>
+				<option value="tv">COM_PTICKETS_O_TV</option>
+				<option value="training">COM_PTICKETS_O_TRAINING</option>
+				<option value="other">COM_PTICKETS_O_OTHER</option>
+			</field>
+			<field name="address" type="text" label="COM_PTICKETS_F_ADDRESS" required="true" filter="string" maxlength="200" />
+			<field name="city" type="list" label="COM_PTICKETS_F_CITY" required="true" validate="options">
+				<option value="">JSELECT</option>
+				<option value="green-bay">Green Bay</option>
+				<option value="appleton">Appleton</option>
+				<option value="de-pere">De Pere</option>
+				<option value="ashwaubenon">Ashwaubenon</option>
+				<option value="kaukauna">Kaukauna</option>
+				<option value="neenah">Neenah</option>
+				<option value="menasha">Menasha</option>
+				<option value="other">COM_PTICKETS_O_OTHER_AREA</option>
+			</field>
+			<field name="zip" type="text" label="COM_PTICKETS_F_ZIP" filter="string" maxlength="10" />
+			<field name="dates" type="text" label="COM_PTICKETS_F_DATES" hint="COM_PTICKETS_F_DATES_HINT" filter="string" maxlength="200" />
+			<field name="time" type="list" label="COM_PTICKETS_F_TIME" validate="options">
+				<option value="any">COM_PTICKETS_O_ANY_TIME</option>
+				<option value="morning">COM_PTICKETS_O_MORNING</option>
+				<option value="afternoon">COM_PTICKETS_O_AFTERNOON</option>
+				<option value="evening">COM_PTICKETS_O_EVENING</option>
+			</field>
+			<field name="devices" type="number" label="COM_PTICKETS_F_DEVICE_COUNT" min="1" max="500" default="1" filter="integer" />
+			<field name="access" type="textarea" rows="2" label="COM_PTICKETS_F_ACCESS" filter="string" />
+		</fieldset>
+	</fields>
+</form>

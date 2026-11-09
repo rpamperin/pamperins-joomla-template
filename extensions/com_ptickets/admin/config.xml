@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<fieldset name="tickets" label="COM_PTICKETS_CONFIG_TICKETS">
+		<field name="notify_email" type="email" default="" label="COM_PTICKETS_CONFIG_NOTIFY_EMAIL" description="COM_PTICKETS_CONFIG_NOTIFY_EMAIL_DESC" validate="email" />
+		<field name="ref_prefix" type="text" default="PT-" label="COM_PTICKETS_CONFIG_REF_PREFIX" filter="cmd" />
+		<field name="remote_url" type="url" default="https://support.pamperins.com/get-help" label="COM_PTICKETS_CONFIG_REMOTE_URL" description="COM_PTICKETS_CONFIG_REMOTE_URL_DESC" filter="url" />
+		<field name="customer_email" type="radio" default="1" label="COM_PTICKETS_CONFIG_CUSTOMER_EMAIL" layout="joomla.form.field.radio.switcher">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
+	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
+		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" filter="rules" validate="rules" component="com_ptickets" section="component" />
+	</fieldset>
+</config>

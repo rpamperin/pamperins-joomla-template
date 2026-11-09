@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="details">
+		<fieldset name="details" label="COM_PTICKETS_FIELDSET_DETAILS">
+			<field name="os" type="list" label="COM_PTICKETS_F_OS" required="true" validate="options">
+				<option value="">JSELECT</option>
+				<option value="windows">Windows</option>
+				<option value="macos">macOS (Mac)</option>
+				<option value="linux">Linux</option>
+				<option value="chromeos">ChromeOS (Chromebook)</option>
+				<option value="unsure">COM_PTICKETS_O_NOT_SURE</option>
+			</field>
+			<field name="device" type="list" label="COM_PTICKETS_F_DEVICE" validate="options">
+				<option value="laptop">COM_PTICKETS_O_LAPTOP</option>
+				<option value="desktop">COM_PTICKETS_O_DESKTOP</option>
+				<option value="other">COM_PTICKETS_O_OTHER</option>
+			</field>
+			<field name="problem" type="list" label="COM_PTICKETS_F_PROBLEM" required="true" validate="options">
+				<option value="">JSELECT</option>
+				<option value="slow">COM_PTICKETS_O_SLOW</option>
+				<option value="virus">COM_PTICKETS_O_VIRUS</option>
+				<option value="email">COM_PTICKETS_O_EMAIL</option>
+				<option value="printer">COM_PTICKETS_O_PRINTER</option>
+				<option value="software">COM_PTICKETS_O_SOFTWARE</option>
+				<option value="error">COM_PTICKETS_O_ERROR</option>
+				<option value="other">COM_PTICKETS_O_OTHER</option>
+			</field>
+			<field name="error_message" type="textarea" rows="2" label="COM_PTICKETS_F_ERROR_MESSAGE" filter="string" />
+			<field name="started" type="text" label="COM_PTICKETS_F_STARTED" hint="COM_PTICKETS_F_STARTED_HINT" filter="string" maxlength="120" />
+			<field name="online" type="radio" label="COM_PTICKETS_F_ONLINE" default="yes" layout="joomla.form.field.radio.buttons" validate="options">
+				<option value="yes">JYES</option>
+				<option value="no">JNO</option>
+			</field>
+		</fieldset>
+	</fields>
+</form>
