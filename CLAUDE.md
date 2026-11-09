@@ -46,7 +46,10 @@ See README.md for features, and **docs/DEPLOY.md for installing or updating the 
   - To add a request type: add it to `SupportTypes::TYPES`, create `type_<key>.xml`, add its
     `COM_PTICKETS_TYPE_<KEY>` strings, add it to `admin/forms/filter_tickets.xml`, and add a `.pt-card--t-<key>` icon in user.css
 - `content/remote-support.html`: Remote Support page, pasted into a Joomla article on the live site
-- `docs/DEPLOY.md`: live-server runbook. `docs/support-integration-reply.md`: notes for the support (RSUP) server
+- `docs/DEPLOY.md`: live-server runbook (Part A test copy at a subdomain, steps 1–7 install, Part B go live).
+- `deploy/make-test-copy.sh` / `deploy/go-live.sh`: run **on the server** (with sudo) by the runbook; tested locally.
+  `make-test-copy` only reads the live site; `go-live` asks for `YES` and keeps the live `configuration.php`.
+-  `docs/support-integration-reply.md`: notes for the support (RSUP) server
 - `dev/seed-local.php`: demo content for the **local Docker site only**
 - `screenshots/`: desktop and phone renders from the local test site
 
