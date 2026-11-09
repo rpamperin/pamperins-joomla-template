@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Questions every request type asks. Type-specific questions are in type_<key>.xml -->
+<form>
+	<fieldset name="summary" label="COM_PTICKETS_FIELDSET_SUMMARY">
+		<field name="subject" type="text" label="COM_PTICKETS_FIELD_SUBJECT" hint="COM_PTICKETS_FIELD_SUBJECT_HINT" required="true" maxlength="200" filter="string" />
+		<field name="description" type="textarea" label="COM_PTICKETS_FIELD_DESCRIPTION" description="COM_PTICKETS_FIELD_DESCRIPTION_DESC" required="true" rows="6" filter="string" />
+	</fieldset>
+	<fieldset name="contact" label="COM_PTICKETS_FIELDSET_CONTACT">
+		<field name="phone" type="tel" label="COM_PTICKETS_FIELD_PHONE" hint="(920) 555-0100" maxlength="40" filter="string" />
+		<field name="contact_method" type="list" label="COM_PTICKETS_FIELD_CONTACT_METHOD" default="email" validate="options">
+			<option value="email">COM_PTICKETS_CONTACT_EMAIL</option>
+			<option value="phone">COM_PTICKETS_CONTACT_PHONE</option>
+			<option value="text">COM_PTICKETS_CONTACT_TEXT</option>
+		</field>
+		<field name="priority" type="list" label="COM_PTICKETS_FIELD_PRIORITY" default="normal" validate="options">
+			<option value="low">COM_PTICKETS_URGENCY_LOW</option>
+			<option value="normal">COM_PTICKETS_URGENCY_NORMAL</option>
+			<option value="high">COM_PTICKETS_URGENCY_HIGH</option>
+			<option value="urgent">COM_PTICKETS_URGENCY_URGENT</option>
+		</field>
+	</fieldset>
+</form>

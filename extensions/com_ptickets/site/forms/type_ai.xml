@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="details">
+		<fieldset name="details" label="COM_PTICKETS_FIELDSET_DETAILS">
+			<field name="goal" type="list" label="COM_PTICKETS_F_AI_GOAL" required="true" validate="options">
+				<option value="">JSELECT</option>
+				<option value="chatbot">COM_PTICKETS_O_AI_CHATBOT</option>
+				<option value="documents">COM_PTICKETS_O_AI_DOCUMENTS</option>
+				<option value="data">COM_PTICKETS_O_AI_DATA</option>
+				<option value="integrate">COM_PTICKETS_O_AI_INTEGRATE</option>
+				<option value="local">COM_PTICKETS_O_AI_LOCAL</option>
+				<option value="training">COM_PTICKETS_O_AI_TRAINING</option>
+				<option value="other">COM_PTICKETS_O_OTHER</option>
+			</field>
+			<field name="tools" type="text" label="COM_PTICKETS_F_AI_TOOLS" hint="COM_PTICKETS_F_AI_TOOLS_HINT" filter="string" maxlength="200" />
+			<field name="data_sensitivity" type="list" label="COM_PTICKETS_F_AI_DATA" validate="options">
+				<option value="public">COM_PTICKETS_O_DATA_PUBLIC</option>
+				<option value="internal">COM_PTICKETS_O_DATA_INTERNAL</option>
+				<option value="confidential">COM_PTICKETS_O_DATA_CONFIDENTIAL</option>
+				<option value="unsure">COM_PTICKETS_O_NOT_SURE</option>
+			</field>
+			<field name="budget" type="list" label="COM_PTICKETS_F_BUDGET" validate="options">
+				<option value="unsure">COM_PTICKETS_O_NOT_SURE</option>
+				<option value="lt1k">COM_PTICKETS_O_BUDGET_1</option>
+				<option value="1-3k">COM_PTICKETS_O_BUDGET_2</option>
+				<option value="3-10k">COM_PTICKETS_O_BUDGET_3</option>
+				<option value="10k+">COM_PTICKETS_O_BUDGET_4</option>
+			</field>
+			<field name="deadline" type="text" label="COM_PTICKETS_F_DEADLINE" filter="string" maxlength="100" />
+		</fieldset>
+	</fields>
+</form>

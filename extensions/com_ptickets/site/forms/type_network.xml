@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="details">
+		<fieldset name="details" label="COM_PTICKETS_FIELDSET_DETAILS">
+			<field name="location" type="radio" label="COM_PTICKETS_F_LOCATION" default="home" layout="joomla.form.field.radio.buttons" validate="options">
+				<option value="home">COM_PTICKETS_O_HOME</option>
+				<option value="business">COM_PTICKETS_O_BUSINESS</option>
+			</field>
+			<field name="issue" type="list" label="COM_PTICKETS_F_NET_ISSUE" required="true" validate="options">
+				<option value="">JSELECT</option>
+				<option value="slow">COM_PTICKETS_O_NET_SLOW</option>
+				<option value="deadzones">COM_PTICKETS_O_NET_DEADZONES</option>
+				<option value="down">COM_PTICKETS_O_NET_DOWN</option>
+				<option value="new">COM_PTICKETS_O_NET_NEW</option>
+				<option value="security">COM_PTICKETS_O_NET_SECURITY</option>
+				<option value="other">COM_PTICKETS_O_OTHER</option>
+			</field>
+			<field name="devices" type="number" label="COM_PTICKETS_F_DEVICE_COUNT" min="1" max="1000" default="5" filter="integer" />
+			<field name="isp" type="text" label="COM_PTICKETS_F_ISP" hint="COM_PTICKETS_F_ISP_HINT" filter="string" maxlength="100" />
+			<field name="equipment" type="text" label="COM_PTICKETS_F_EQUIPMENT" filter="string" maxlength="200" />
+			<field name="nsd" type="list" label="COM_PTICKETS_F_NSD" validate="options">
+				<option value="maybe">COM_PTICKETS_O_TELL_ME_MORE</option>
+				<option value="yes">JYES</option>
+				<option value="no">JNO</option>
+			</field>
+		</fieldset>
+	</fields>
+</form>

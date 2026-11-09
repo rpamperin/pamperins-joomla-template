@@ -34,11 +34,6 @@ $now = Factory::getDate()->toSql();
 
 $exists = fn (string $sql) => (int) $db->setQuery($sql)->loadResult();
 
-if ($exists("SELECT COUNT(*) FROM #__menu WHERE alias='pricing' AND client_id=0")) {
-    echo "Already seeded.\n";
-    exit(0);
-}
-
 function article(DatabaseInterface $db, string $title, string $alias, string $html, string $now): int
 {
     $existing = (int) $db->setQuery('SELECT id FROM #__content WHERE alias = ' . $db->quote($alias))->loadResult();
@@ -52,11 +47,74 @@ function article(DatabaseInterface $db, string $title, string $alias, string $ht
         'title' => $title, 'alias' => $alias, 'introtext' => $html, 'fulltext' => '',
         'state' => 1, 'catid' => 2, 'access' => 1, 'language' => '*', 'created' => $now,
         'created_by' => 0, 'modified' => $now, 'publish_up' => $now,
-        'attribs' => '{}', 'metadata' => '{"robots":""}', 'images' => '{}', 'urls' => '{}', 'metakey' => '', 'metadesc' => '',
+        'attribs' => '{"show_category":"0","show_author":"0","show_publish_date":"0","show_create_date":"0","show_modify_date":"0","show_hits":"0","show_item_navigation":"0","show_parent_category":"0"}', 'metadata' => '{"robots":""}', 'images' => '{}', 'urls' => '{}', 'metakey' => '', 'metadesc' => '',
     ]);
     $t->store() or die('Article failed: ' . $t->getError());
 
     return (int) $t->id;
+}
+
+/** Remote Support page + main-menu item after "Services" (safe to run again). */
+function remoteSupport(DatabaseInterface $db, string $now): void
+{
+    if ((int) $db->setQuery("SELECT COUNT(*) FROM #__menu WHERE alias='remote-support' AND client_id=0")->loadResult()) {
+        return;
+    }
+
+    $id = article($db, 'Remote Support from Pamperins Tech', 'remote-support', file_get_contents('/project/content/remote-support.html'), $now);
+    $after = (int) $db->setQuery("SELECT id FROM #__menu WHERE alias='services' AND client_id=0")->loadResult();
+
+    $m = new Menu($db);
+    $m->setLocation($after ?: 1, $after ? 'after' : 'last-child');
+    $m->bind([
+        'menutype' => 'mainmenu', 'title' => 'Remote Support', 'alias' => 'remote-support',
+        'link' => 'index.php?option=com_content&view=article&id=' . $id, 'type' => 'component',
+        'published' => 1, 'parent_id' => 1, 'level' => 1, 'component_id' => (int) ComponentHelper::getComponent('com_content')->id,
+        'access' => 1, 'client_id' => 0, 'language' => '*', 'template_style_id' => 0, 'img' => '',
+        'params' => json_encode(['menu_show' => 1, 'show_page_heading' => 0, 'show_category' => '0', 'show_author' => '0', 'show_publish_date' => '0', 'show_create_date' => '0', 'show_modify_date' => '0', 'show_hits' => '0', 'show_item_navigation' => '0', 'show_parent_category' => '0']),
+    ]);
+    ($m->check() && $m->store()) or die('Menu Remote Support failed: ' . $m->getError());
+    $m->rebuildPath($m->id);
+    echo "Added Remote Support page (article $id).\n";
+}
+
+
+/** Support ticket pages (needs the com_ptickets extension installed). */
+function supportTickets(DatabaseInterface $db): void
+{
+    $component = ComponentHelper::getComponent('com_ptickets', true);
+
+    if (!$component->id || (int) $db->setQuery("SELECT COUNT(*) FROM #__menu WHERE alias='request-support' AND client_id=0")->loadResult()) {
+        return;
+    }
+
+    $after = (int) $db->setQuery("SELECT id FROM #__menu WHERE alias='remote-support' AND client_id=0")->loadResult();
+
+    foreach ([['Request Support', 'request-support', 'request', 0], ['My Tickets', 'my-tickets', 'tickets', 0]] as [$title, $alias, $view, $show]) {
+        $m = new Menu($db);
+        $m->setLocation($after ?: 1, $after ? 'after' : 'last-child');
+        $m->bind([
+            'menutype' => 'mainmenu', 'title' => $title, 'alias' => $alias,
+            'link' => 'index.php?option=com_ptickets&view=' . $view, 'type' => 'component',
+            'published' => 1, 'parent_id' => 1, 'level' => 1, 'component_id' => (int) $component->id,
+            'access' => 1, 'client_id' => 0, 'language' => '*', 'template_style_id' => 0, 'img' => '',
+            'params' => json_encode(['menu_show' => $show]),
+        ]);
+        ($m->check() && $m->store()) or die("Menu $title failed: " . $m->getError());
+        $m->rebuildPath($m->id);
+        $after = (int) $m->id;
+    }
+
+    // Local testing: no activation e-mail needed for new accounts
+    $db->setQuery("UPDATE #__extensions SET params=JSON_SET(params,'$.useractivation','0') WHERE element='com_users'")->execute();
+    echo "Added support ticket menu items.\n";
+}
+
+if ($exists("SELECT COUNT(*) FROM #__menu WHERE alias='pricing' AND client_id=0")) {
+    remoteSupport($db, $now);
+    supportTickets($db);
+    echo "Already seeded.\n";
+    exit(0);
 }
 
 $servicesId = article($db, 'Services', 'services', <<<'HTML'
@@ -123,11 +181,14 @@ foreach ($items as [$title, $alias, $link, $component, $show]) {
         'menutype' => 'mainmenu', 'title' => $title, 'alias' => $alias, 'link' => $link, 'type' => 'component',
         'published' => 1, 'parent_id' => 1, 'level' => 1, 'component_id' => $cid($component), 'access' => 1,
         'client_id' => 0, 'language' => '*', 'template_style_id' => 0, 'img' => '',
-        'params' => json_encode(['menu_show' => $show, 'show_page_heading' => 0, 'menu-anchor_css' => '']),
+        'params' => json_encode(['menu_show' => $show, 'show_page_heading' => 0, 'menu-anchor_css' => '', 'show_category' => '0', 'show_author' => '0', 'show_publish_date' => '0', 'show_create_date' => '0', 'show_modify_date' => '0', 'show_hits' => '0', 'show_item_navigation' => '0', 'show_parent_category' => '0']),
     ]);
     ($m->check() && $m->store()) or die("Menu $title failed: " . $m->getError());
     $m->rebuildPath($m->id);
 }
+
+remoteSupport($db, $now);
+supportTickets($db);
 
 // Main menu module -> header "menu" position, collapsible layout; hide sidebar login form
 $db->setQuery("UPDATE #__modules SET position='menu', showtitle=0, params=JSON_SET(params,'$.layout','cassiopeia:collapse-metismenu') WHERE id=1")->execute();
@@ -138,7 +199,7 @@ $db->setQuery("UPDATE #__template_styles SET home='0' WHERE client_id=0")->execu
 $db->setQuery("UPDATE #__template_styles SET home='1' WHERE client_id=0 AND template='pamperins'")->execute();
 
 // Allow customer registration so the registration view can be tested
-$db->setQuery("UPDATE #__extensions SET params=JSON_SET(params,'$.allowUserRegistration','1','$.useractivation','1') WHERE element='com_users'")->execute();
+$db->setQuery("UPDATE #__extensions SET params=JSON_SET(params,'$.allowUserRegistration','1') WHERE element='com_users'")->execute();
 
 // Friendly URLs work out of the box with the Apache image if .htaccess exists
 if (!is_file(JPATH_ROOT . '/.htaccess')) {

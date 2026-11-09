@@ -79,8 +79,18 @@ $wa->registerStyle('template.active', '', [], [], ['template.cassiopeia.' . ($th
 // Preload the self-hosted Inter font so text doesn't flash
 $this->getPreloadManager()->preload(Uri::root(true) . '/media/templates/site/pamperins/fonts/inter-latin-wght-normal.woff2', ['as' => 'font', 'type' => 'font/woff2', 'crossorigin' => 'anonymous']);
 
-// Logo
-if ($params->get('logoFile')) {
+// Logo: one of the bundled Pamperins logos, or a custom file.
+// Styles saved before the picker existed keep a custom logo if one was chosen.
+$logoPreset = $params->get('logoPreset');
+
+if ($logoPreset === null) {
+    $logoFile   = (string) $params->get('logoFile', '');
+    $logoPreset = ($logoFile !== '' && $logoFile !== 'images/logo.svg') ? 'custom' : '2-pt-monogram';
+}
+
+if ($logoPreset !== 'custom' && preg_match('/^[0-9a-z-]+$/', $logoPreset)) {
+    $logo = HTMLHelper::_('image', 'logos/' . $logoPreset . '.svg', $sitename, ['class' => 'pt-logo pt-logo--' . $logoPreset, 'loading' => 'eager', 'decoding' => 'async'], true, 0);
+} elseif ($params->get('logoFile')) {
     $logo = HTMLHelper::_('image', Uri::root(false) . htmlspecialchars($params->get('logoFile'), ENT_QUOTES), $sitename, ['class' => 'pt-logo', 'loading' => 'eager', 'decoding' => 'async'], false, 0);
 } else {
     $logo = HTMLHelper::_('image', 'logo.svg', $sitename, ['class' => 'pt-logo', 'loading' => 'eager', 'decoding' => 'async'], true, 0);
@@ -153,7 +163,7 @@ $hours    = trim((string) $params->get('hours', ''));
             <?php endif; ?>
 
             <div class="pt-header__actions">
-                <a class="btn pt-btn pt-btn--accent" href="<?php echo $pt_href($params->get('helpUrl', 'get-help')); ?>">
+                <a class="btn pt-btn pt-btn--accent" href="<?php echo $pt_href($params->get('helpUrl', 'request-support')); ?>">
                     <?php echo $e($params->get('helpLabel', 'Get Help Now')); ?>
                 </a>
                 <a class="btn pt-btn pt-btn--ghost" href="<?php echo $pt_href($params->get('loginUrl', 'index.php?option=com_users&view=login')); ?>">
@@ -179,7 +189,7 @@ $hours    = trim((string) $params->get('hours', ''));
                     </a>
                     <?php if ($params->get('remoteUrl')) : ?>
                         <a class="btn pt-btn pt-btn--ghost pt-btn--lg" href="<?php echo $pt_href($params->get('remoteUrl')); ?>">
-                            <?php echo $e($params->get('remoteLabel', 'Start Remote Support')); ?>
+                            <?php echo $e($params->get('remoteLabel', 'Get Remote Support')); ?>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -274,7 +284,7 @@ $hours    = trim((string) $params->get('hours', ''));
                         <li class="pt-ico pt-ico--mail"><a href="mailto:<?php echo $e($email); ?>"><?php echo $e($email); ?></a></li>
                     <?php endif; ?>
                     <?php if ($params->get('remoteUrl')) : ?>
-                        <li class="pt-ico pt-ico--remote"><a href="<?php echo $pt_href($params->get('remoteUrl')); ?>"><?php echo $e($params->get('remoteLabel', 'Start Remote Support')); ?></a></li>
+                        <li class="pt-ico pt-ico--remote"><a href="<?php echo $pt_href($params->get('remoteUrl')); ?>"><?php echo $e($params->get('remoteLabel', 'Get Remote Support')); ?></a></li>
                     <?php endif; ?>
                 </ul>
             </div>

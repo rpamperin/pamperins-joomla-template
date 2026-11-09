@@ -53,7 +53,15 @@
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
-				<field name="logoFile" type="media" schemes="http,https,ftp,ftps,data,file" validate="url" relative="true" default="images/logo.svg" label="TPL_CASSIOPEIA_LOGO_LABEL" showon="brand:1" />
+				<field name="logoPreset" type="list" default="2-pt-monogram" label="TPL_PAMPERINS_LOGO_PRESET" description="TPL_PAMPERINS_LOGO_PRESET_DESC" validate="options" showon="brand:1">
+					<option value="1-shield-node">TPL_PAMPERINS_LOGO_1</option>
+					<option value="2-pt-monogram">TPL_PAMPERINS_LOGO_2</option>
+					<option value="3-router-signal">TPL_PAMPERINS_LOGO_3</option>
+					<option value="4-lock-cloud">TPL_PAMPERINS_LOGO_4</option>
+					<option value="5-wordmark-node">TPL_PAMPERINS_LOGO_5</option>
+					<option value="custom">TPL_PAMPERINS_LOGO_CUSTOM</option>
+				</field>
+				<field name="logoFile" type="media" schemes="http,https,ftp,ftps,data,file" validate="url" relative="true" default="images/logo.svg" label="TPL_CASSIOPEIA_LOGO_LABEL" showon="brand:1[AND]logoPreset:custom" />
 				<field name="stickyHeader" type="radio" label="TPL_CASSIOPEIA_STICKY_LABEL" layout="joomla.form.field.radio.switcher" default="1" filter="integer">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
@@ -66,7 +74,7 @@
 
 			<fieldset name="header" label="TPL_PAMPERINS_FIELDSET_HEADER">
 				<field name="helpLabel" type="text" default="Get Help Now" label="TPL_PAMPERINS_HELP_LABEL" filter="string" />
-				<field name="helpUrl" type="text" default="get-help" label="TPL_PAMPERINS_HELP_URL" description="TPL_PAMPERINS_HELP_URL_DESC" filter="string" />
+				<field name="helpUrl" type="text" default="request-support" label="TPL_PAMPERINS_HELP_URL" description="TPL_PAMPERINS_HELP_URL_DESC" filter="string" />
 				<field name="loginLabel" type="text" default="Customer Login" label="TPL_PAMPERINS_LOGIN_LABEL" filter="string" />
 				<field name="loginUrl" type="text" default="index.php?option=com_users&amp;view=login" label="TPL_PAMPERINS_LOGIN_URL" filter="string" />
 			</fieldset>
@@ -81,8 +89,8 @@
 				<field name="heroText" type="textarea" rows="3" default="Pamperins Tech keeps Northeast Wisconsin homes and small businesses running: fast remote support, solid networks, real security, and websites that work." label="TPL_PAMPERINS_HERO_TEXT" filter="string" showon="heroShow:1" />
 				<field name="bookingLabel" type="text" default="Book an Appointment" label="TPL_PAMPERINS_BOOKING_LABEL" filter="string" showon="heroShow:1" />
 				<field name="bookingUrl" type="text" default="#book" label="TPL_PAMPERINS_BOOKING_URL" description="TPL_PAMPERINS_BOOKING_URL_DESC" filter="string" showon="heroShow:1" />
-				<field name="remoteLabel" type="text" default="Start Remote Support" label="TPL_PAMPERINS_REMOTE_LABEL" filter="string" showon="heroShow:1" />
-				<field name="remoteUrl" type="text" default="#remote-support" label="TPL_PAMPERINS_REMOTE_URL" description="TPL_PAMPERINS_REMOTE_URL_DESC" filter="string" showon="heroShow:1" />
+				<field name="remoteLabel" type="text" default="Get Remote Support" label="TPL_PAMPERINS_REMOTE_LABEL" filter="string" showon="heroShow:1" />
+				<field name="remoteUrl" type="text" default="remote-support" label="TPL_PAMPERINS_REMOTE_URL" description="TPL_PAMPERINS_REMOTE_URL_DESC" filter="string" showon="heroShow:1" />
 			</fieldset>
 
 			<fieldset name="footer" label="TPL_PAMPERINS_FIELDSET_FOOTER">

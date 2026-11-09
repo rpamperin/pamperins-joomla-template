@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="details">
+		<fieldset name="details" label="COM_PTICKETS_FIELDSET_DETAILS">
+			<field name="kind" type="radio" label="COM_PTICKETS_F_WEB_KIND" default="new" layout="joomla.form.field.radio.buttons" validate="options">
+				<option value="new">COM_PTICKETS_O_WEB_NEW</option>
+				<option value="existing">COM_PTICKETS_O_WEB_EXISTING</option>
+			</field>
+			<field name="url" type="url" label="COM_PTICKETS_F_URL" hint="https://" filter="url" validate="url" />
+			<field name="site_type" type="list" label="COM_PTICKETS_F_SITE_TYPE" validate="options">
+				<option value="business">COM_PTICKETS_O_SITE_BUSINESS</option>
+				<option value="store">COM_PTICKETS_O_SITE_STORE</option>
+				<option value="booking">COM_PTICKETS_O_SITE_BOOKING</option>
+				<option value="portfolio">COM_PTICKETS_O_SITE_PORTFOLIO</option>
+				<option value="other">COM_PTICKETS_O_OTHER</option>
+			</field>
+			<field name="pages" type="list" label="COM_PTICKETS_F_PAGES" validate="options">
+				<option value="1-5">1–5</option>
+				<option value="6-15">6–15</option>
+				<option value="16+">16+</option>
+				<option value="unsure">COM_PTICKETS_O_NOT_SURE</option>
+			</field>
+			<field name="budget" type="list" label="COM_PTICKETS_F_BUDGET" validate="options">
+				<option value="unsure">COM_PTICKETS_O_NOT_SURE</option>
+				<option value="lt1k">COM_PTICKETS_O_BUDGET_1</option>
+				<option value="1-3k">COM_PTICKETS_O_BUDGET_2</option>
+				<option value="3-10k">COM_PTICKETS_O_BUDGET_3</option>
+				<option value="10k+">COM_PTICKETS_O_BUDGET_4</option>
+			</field>
+			<field name="deadline" type="text" label="COM_PTICKETS_F_DEADLINE" filter="string" maxlength="100" />
+		</fieldset>
+	</fields>
+</form>
