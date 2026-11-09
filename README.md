@@ -59,6 +59,8 @@ Remove everything with `docker compose down -v`.
 
 ## Install on the live site
 
+> Using Claude Code? Follow **docs/DEPLOY.md** (backup, install over SSH, settings, e-mail, checks, restore).
+
 1. **Back up** the site first (Akeeba Backup, or your host's backup).
 2. Run `./build.sh` (or use a `pamperins-template.zip` you already built).
 3. Admin → **System → Install → Extensions → Upload Package File** → drop in `pamperins-template.zip`.
