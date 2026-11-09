@@ -163,7 +163,7 @@ $hours    = trim((string) $params->get('hours', ''));
             <?php endif; ?>
 
             <div class="pt-header__actions">
-                <a class="btn pt-btn pt-btn--accent" href="<?php echo $pt_href($params->get('helpUrl', 'get-help')); ?>">
+                <a class="btn pt-btn pt-btn--accent" href="<?php echo $pt_href($params->get('helpUrl', 'remote-support')); ?>">
                     <?php echo $e($params->get('helpLabel', 'Get Help Now')); ?>
                 </a>
                 <a class="btn pt-btn pt-btn--ghost" href="<?php echo $pt_href($params->get('loginUrl', 'index.php?option=com_users&view=login')); ?>">
@@ -189,7 +189,7 @@ $hours    = trim((string) $params->get('hours', ''));
                     </a>
                     <?php if ($params->get('remoteUrl')) : ?>
                         <a class="btn pt-btn pt-btn--ghost pt-btn--lg" href="<?php echo $pt_href($params->get('remoteUrl')); ?>">
-                            <?php echo $e($params->get('remoteLabel', 'Start Remote Support')); ?>
+                            <?php echo $e($params->get('remoteLabel', 'Get Remote Support')); ?>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -284,7 +284,7 @@ $hours    = trim((string) $params->get('hours', ''));
                         <li class="pt-ico pt-ico--mail"><a href="mailto:<?php echo $e($email); ?>"><?php echo $e($email); ?></a></li>
                     <?php endif; ?>
                     <?php if ($params->get('remoteUrl')) : ?>
-                        <li class="pt-ico pt-ico--remote"><a href="<?php echo $pt_href($params->get('remoteUrl')); ?>"><?php echo $e($params->get('remoteLabel', 'Start Remote Support')); ?></a></li>
+                        <li class="pt-ico pt-ico--remote"><a href="<?php echo $pt_href($params->get('remoteUrl')); ?>"><?php echo $e($params->get('remoteLabel', 'Get Remote Support')); ?></a></li>
                     <?php endif; ?>
                 </ul>
             </div>

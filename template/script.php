@@ -177,7 +177,7 @@ return new class () implements ServiceProviderInterface {
 <div class="pt-card pt-card--remote">
 <h3>Remote Support</h3>
 <p>Secure screen-sharing help for slow PCs, email, printers, software and Linux, Windows or Mac issues — often fixed the same day.</p>
-<p><a class="pt-card__link" href="get-help">Get remote help</a></p>
+<p><a class="pt-card__link" href="remote-support">Get remote help</a></p>
 </div>
 <div class="pt-card pt-card--network">
 <h3>Networking</h3>

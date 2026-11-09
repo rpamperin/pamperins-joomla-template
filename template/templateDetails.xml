@@ -74,7 +74,7 @@
 
 			<fieldset name="header" label="TPL_PAMPERINS_FIELDSET_HEADER">
 				<field name="helpLabel" type="text" default="Get Help Now" label="TPL_PAMPERINS_HELP_LABEL" filter="string" />
-				<field name="helpUrl" type="text" default="get-help" label="TPL_PAMPERINS_HELP_URL" description="TPL_PAMPERINS_HELP_URL_DESC" filter="string" />
+				<field name="helpUrl" type="text" default="remote-support" label="TPL_PAMPERINS_HELP_URL" description="TPL_PAMPERINS_HELP_URL_DESC" filter="string" />
 				<field name="loginLabel" type="text" default="Customer Login" label="TPL_PAMPERINS_LOGIN_LABEL" filter="string" />
 				<field name="loginUrl" type="text" default="index.php?option=com_users&amp;view=login" label="TPL_PAMPERINS_LOGIN_URL" filter="string" />
 			</fieldset>
@@ -89,8 +89,8 @@
 				<field name="heroText" type="textarea" rows="3" default="Pamperins Tech keeps Northeast Wisconsin homes and small businesses running: fast remote support, solid networks, real security, and websites that work." label="TPL_PAMPERINS_HERO_TEXT" filter="string" showon="heroShow:1" />
 				<field name="bookingLabel" type="text" default="Book an Appointment" label="TPL_PAMPERINS_BOOKING_LABEL" filter="string" showon="heroShow:1" />
 				<field name="bookingUrl" type="text" default="#book" label="TPL_PAMPERINS_BOOKING_URL" description="TPL_PAMPERINS_BOOKING_URL_DESC" filter="string" showon="heroShow:1" />
-				<field name="remoteLabel" type="text" default="Start Remote Support" label="TPL_PAMPERINS_REMOTE_LABEL" filter="string" showon="heroShow:1" />
-				<field name="remoteUrl" type="text" default="#remote-support" label="TPL_PAMPERINS_REMOTE_URL" description="TPL_PAMPERINS_REMOTE_URL_DESC" filter="string" showon="heroShow:1" />
+				<field name="remoteLabel" type="text" default="Get Remote Support" label="TPL_PAMPERINS_REMOTE_LABEL" filter="string" showon="heroShow:1" />
+				<field name="remoteUrl" type="text" default="remote-support" label="TPL_PAMPERINS_REMOTE_URL" description="TPL_PAMPERINS_REMOTE_URL_DESC" filter="string" showon="heroShow:1" />
 			</fieldset>
 
 			<fieldset name="footer" label="TPL_PAMPERINS_FIELDSET_FOOTER">

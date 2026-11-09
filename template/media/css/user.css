@@ -474,6 +474,85 @@ body.pamperins {
 
 .pamperins .alert { border-radius: var(--pt-radius-sm); }
 
+/* ---------- Article helpers (Remote Support page etc.) ----------
+   Use these classes in the editor's source-code view:
+   .pt-lead  intro paragraph       .pt-steps  numbered steps (<ol>)
+   .pt-cta   centered button row   .pt-callout / .pt-callout--secure  highlighted box
+   .pt-note  small closing line */
+.pamperins .pt-lead { font-size: clamp(1.1rem, 2.4vw, 1.3rem); color: var(--pt-muted); max-width: 46rem; }
+
+.pamperins ol.pt-steps {
+  list-style: none;
+  counter-reset: pt-step;
+  margin: 1.25rem 0 2rem;
+  padding: 0;
+  display: grid;
+  gap: .9rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.pamperins ol.pt-steps > li {
+  counter-increment: pt-step;
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--pt-line);
+  border-radius: var(--pt-radius);
+  box-shadow: var(--pt-shadow);
+  padding: 3.6rem 1.25rem 1.25rem;
+  color: var(--pt-muted);
+}
+
+.pamperins ol.pt-steps > li::before {
+  content: counter(pt-step);
+  position: absolute;
+  top: 1.1rem;
+  left: 1.25rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--pt-navy);
+  color: var(--pt-blue);
+  font-weight: 800;
+}
+
+.pamperins ol.pt-steps > li strong { display: block; color: var(--pt-navy); margin-bottom: .25rem; }
+
+.pamperins .pt-cta { text-align: center; margin: 2rem 0; }
+.pamperins .pt-cta .btn { min-width: min(100%, 18rem); }
+
+.pamperins .pt-callout {
+  position: relative;
+  background: var(--pt-navy);
+  color: var(--pt-on-dark-muted);
+  border-radius: var(--pt-radius);
+  padding: 1.5rem 1.5rem 1.5rem 4.5rem;
+  margin: 2rem 0;
+}
+
+.pamperins .pt-callout h3 { color: #fff; font-size: 1.15rem; margin: 0 0 .35rem; }
+.pamperins .pt-callout p { margin: 0; }
+.pamperins .pt-callout a { color: var(--pt-blue); }
+
+.pamperins .pt-callout::before {
+  content: "";
+  position: absolute;
+  left: 1.5rem;
+  top: 1.5rem;
+  width: 2rem;
+  height: 2rem;
+  background: var(--pt-blue);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@media (max-width: 479.98px) {
+  .pamperins .pt-callout { padding: 4rem 1.25rem 1.25rem; }
+}
+
+.pamperins .pt-note { color: var(--pt-muted); text-align: center; }
+
 /* ---------- Tables ---------- */
 .pamperins main table {
   width: 100%;

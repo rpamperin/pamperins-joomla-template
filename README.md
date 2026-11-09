@@ -25,6 +25,8 @@ template/                     -> becomes the zip (templateDetails.xml at the roo
 build.sh                      -> pamperins-template.zip
 docker-compose.yml            local Joomla 5 + MySQL test site
 dev/seed-local.php            demo content for the local test site only
+content/remote-support.html   Remote Support page content, ready to paste into an article
+docs/support-integration-reply.md  answers for the support.pamperins.com setup
 branding/                     source logos + text-to-paths.py
 screenshots/                  desktop and phone renders from the local test
 ```
@@ -59,14 +61,19 @@ Remove everything with `docker compose down -v`.
    - This copies the placeholder logo to `/images/logo.svg` if that file doesn't already exist.
    - It also creates two modules, **Home - Service Cards** and **Home - Why Pamperins Tech**, shown on the home page. They use positions that exist only in this template, so the current site doesn't change.
 4. **System → Site Template Styles** → click **Pamperins - Default** and fill in the tabs:
-   - *Header Buttons*: set **Help Button Link** to your ticket system URL (e.g. `https://support.pamperins.com`) or a menu alias.
-   - *Home Page Hero*: set **Booking Button Link** (Calendly / Google booking page) and **Remote Support (RSUP) Link**.
+   - *Header Buttons*: **Get Help Now** goes to `remote-support` (the Remote Support page) by default. **Customer Login** goes to Joomla's login page; change it to `https://support.pamperins.com/get-help` if clients should sign in on the support server.
+   - *Home Page Hero*: set **Booking Button Link** (Calendly / Google booking page). **Remote Support Link** defaults to `remote-support`.
    - *Footer Contact Info*: set your real phone, email, service area and hours.
    - *Advanced → Logo*: pick one of the five Pamperins Tech logos (default: PT monogram), or **Custom** to use your own file.
    - Save, then click the **star** next to Pamperins - Default to make it the site template.
 5. **Content → Site Modules** → open your **Main Menu** module → set Position **menu**, turn *Show Title* off, and set *Advanced → Layout* to **Collapsible Dropdown**. Unpublish any modules you don't want (e.g. the sidebar Login Form).
 6. Optional menu items: create a **Customer Login** item (*Users → Login Form*) and a **Get Help** item (*Contacts → Single Contact*, alias `get-help`). Both work as hidden items.
-7. Check the site on your phone and on a computer, then clear the cache (**System → Clear Cache**).
+7. **Remote Support page:** Content → Articles → New. Title *Remote Support from Pamperins Tech*, alias `remote-support`.
+   Click **Toggle Editor**, paste the contents of `content/remote-support.html`, then save.
+   Add a main-menu item **Remote Support** (*Articles → Single Article*, pick that article) right after *Services*.
+   In that menu item's **Options** tab, set Category, Author, Published Date, Hits and Navigation to *Hide*.
+   Do the same for your Services and Pricing menu items.
+8. Check the site on your phone and on a computer, then clear the cache (**System → Clear Cache**).
 
 **Updating later:** build a new zip and upload it again the same way. Your settings, logo and edited home modules are kept.
 
