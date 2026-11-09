@@ -49,7 +49,7 @@ See README.md for features, and **docs/DEPLOY.md for installing or updating the 
 - `docs/DEPLOY.md`: live-server runbook (Part A test copy at a subdomain, steps 1–7 install, Part B go live).
 - `deploy/make-test-copy.sh` / `deploy/go-live.sh`: run **on the server** (with sudo) by the runbook; tested locally.
   `make-test-copy` only reads the live site; `go-live` asks for `YES` and keeps the live `configuration.php`.
--  `docs/support-integration-reply.md`: notes for the support (RSUP) server
+- `docs/support-integration-reply.md`: notes for the support (RSUP) server
 - `dev/seed-local.php`: demo content for the **local Docker site only**
 - `screenshots/`: desktop and phone renders from the local test site
 
