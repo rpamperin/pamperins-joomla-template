@@ -27,7 +27,7 @@ class HtmlView extends BaseHtmlView
             throw new \Exception(Text::_('COM_PTICKETS_TICKET_NOT_FOUND'), 404);
         }
 
-        $this->remoteUrl = (string) ComponentHelper::getParams('com_ptickets')->get('remote_url', '');
+        $this->remoteUrl = (string) ComponentHelper::getParams('com_ptickets')->get('remote_url', 'https://support.pamperins.com/get-help');
         $this->getDocument()->setTitle($this->item->ref . ' – ' . $this->item->subject);
 
         parent::display($tpl);

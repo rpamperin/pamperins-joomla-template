@@ -9,9 +9,10 @@ Items marked **TO FILL IN** need the owner's answer. No passwords or keys are in
 |---|---|
 | Remote Support page at `https://pamperins.com/remote-support` | **Ready.** Content is in `content/remote-support.html`; paste it into a new article (alias `remote-support`) and add a **Remote Support** main-menu item. |
 | "Get Remote Support" button → `https://support.pamperins.com/get-help` | **Done**, opens in a new tab. It uses the site's own button style (bright blue `#2ea8ff`, navy text) instead of the brief's orange inline style, so it matches the theme. |
-| Button on every page | **Done another way:** the header's **Get Help Now** button, the home page's **Get Remote Support** button, the Remote Support service card and the footer's **Get Remote Support** link all go to `/remote-support`, which explains the steps and then links to the support server. |
+| Button on every page | **Done another way:** the home page's **Get Remote Support** button, the Remote Support service card and the footer's **Get Remote Support** link go to `/remote-support`, which explains the steps and then links to the support server. The header's **Get Help Now** button goes to the support request form (`/request-support`). |
 | Footer link "Remote Support" | **Done** (footer → Contact column). |
 | "Client login" → `support.pamperins.com/get-help` | **Not switched yet.** The header's **Customer Login** button still goes to Joomla's own login page. To send it to the support server instead, set *Template Style → Header Buttons → Login Button Link* to `https://support.pamperins.com/get-help`. |
+| Ticket queue | **Built on the website for now** (Joomla extension *Support Tickets*): customers create an account, choose the kind of help, fill in a matching form, and follow their tickets at `/my-tickets`. Tickets have `external_system`/`external_id` fields and fire plugin events (`onPticketsAfterCreate`, `onPticketsAfterReply`, `onPticketsAfterUpdate`) so they can be sent to the support server once it has an API. **Wanted from the support server side:** an API endpoint to create a ticket/session request (customer e-mail, type, subject, description, answers as JSON), returning an ID. |
 
 ## Part B: answers
 

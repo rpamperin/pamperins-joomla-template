@@ -8,6 +8,9 @@ A child template of Cassiopeia for **pamperins.com** (locally owned IT services,
 - Styled pricing tables, contact page/forms, and branded customer login / registration / password reset.
 - Footer: phone, email, service area, hours and copyright, all edited in the template settings.
 
+- **Support tickets** (separate extension): customers create an account, choose one of 7 kinds of help, fill in the
+  matching form, and follow their tickets. Staff work the queue under **Components → Support Tickets**.
+
 Cassiopeia itself is never edited. This template reuses Cassiopeia's CSS and JS, so Joomla updates keep working.
 
 ## Project layout
@@ -22,7 +25,8 @@ template/                     -> becomes the zip (templateDetails.xml at the roo
   media/css/user.css          ALL styling lives here
   media/fonts/                Inter (SIL Open Font License)
   media/images/               logos/ (5 header logos), favicon.svg (PT square), placeholder logo.svg
-build.sh                      -> pamperins-template.zip
+extensions/com_ptickets/      support tickets extension (Joomla component)
+build.sh                      -> pamperins-template.zip + pamperins-support-tickets.zip
 docker-compose.yml            local Joomla 5 + MySQL test site
 dev/seed-local.php            demo content for the local test site only
 content/remote-support.html   Remote Support page content, ready to paste into an article
@@ -75,7 +79,29 @@ Remove everything with `docker compose down -v`.
    Do the same for your Services and Pricing menu items.
 8. Check the site on your phone and on a computer, then clear the cache (**System → Clear Cache**).
 
+9. **Support tickets:** install `pamperins-support-tickets.zip` the same way (System → Install → Extensions).
+   - Menus → Main Menu → New: type *Support Tickets → Support request form*, title **Request Support**, alias `request-support`.
+     (The header's **Get Help Now** button goes to `request-support` by default; set *Display in Menu* to No if you don't want it in the menu bar too.)
+   - New menu item *Support Tickets → My support tickets*, title **My Tickets**, alias `my-tickets` (can be hidden).
+   - Users → Manage → Options: *Allow User Registration* = Yes. *New User Account Activation* = Self, so customers confirm their e-mail. This needs the site's e-mail sending working: System → Global Configuration → Server → Mail.
+   - Components → Support Tickets → Options: where new-ticket alerts go, the ticket number prefix, and the remote support link.
+   - Staff: anyone in the *Manager* or *Administrator* group can work tickets. Give a technician a *Manager* account.
+
 **Updating later:** build a new zip and upload it again the same way. Your settings, logo and edited home modules are kept.
+
+## Support tickets
+
+| Who | Where | What |
+|---|---|---|
+| Customer | **Get Help Now** → `/request-support` | Not logged in: asked to create an account or log in. Then: choose *Get support* (Remote Computer Help, On-site Visit, Network/Wi-Fi/Security) or *Start a project* (Website, Software Development, AI Integration, Automation), and fill in the form for that job. |
+| Customer | `/my-tickets` | Their tickets, status (Received → In progress → Waiting for you / Scheduled → Resolved → Closed), staff replies, and a reply box. Remote tickets show a **Get Remote Support** button. |
+| Staff | Admin → Components → Support Tickets | Queue (shows tickets that still need work by default; filter by status, type or priority; search). Open a ticket to see the customer's answers, change status/priority, assign a technician, reply (e-mailed to the customer) or add an internal note. |
+
+- **Changing the questions:** each type's questions are in `extensions/com_ptickets/site/forms/type_<type>.xml`, and the
+  wording is in `site/language/en-GB/com_ptickets.ini`. Rebuild and reinstall; existing tickets are kept.
+- **Moving to RSUP later:** every ticket has `external_system` / `external_id` columns, and the extension fires
+  `onPticketsAfterCreate`, `onPticketsAfterReply` and `onPticketsAfterUpdate` events (plugin group `ptickets`).
+  A small plugin can copy tickets to the support server's API when that exists.
 
 ## Editing content
 

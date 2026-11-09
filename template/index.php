@@ -163,7 +163,7 @@ $hours    = trim((string) $params->get('hours', ''));
             <?php endif; ?>
 
             <div class="pt-header__actions">
-                <a class="btn pt-btn pt-btn--accent" href="<?php echo $pt_href($params->get('helpUrl', 'remote-support')); ?>">
+                <a class="btn pt-btn pt-btn--accent" href="<?php echo $pt_href($params->get('helpUrl', 'request-support')); ?>">
                     <?php echo $e($params->get('helpLabel', 'Get Help Now')); ?>
                 </a>
                 <a class="btn pt-btn pt-btn--ghost" href="<?php echo $pt_href($params->get('loginUrl', 'index.php?option=com_users&view=login')); ?>">

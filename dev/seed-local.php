@@ -90,7 +90,7 @@ function supportTickets(DatabaseInterface $db): void
 
     $after = (int) $db->setQuery("SELECT id FROM #__menu WHERE alias='remote-support' AND client_id=0")->loadResult();
 
-    foreach ([['Request Support', 'request-support', 'request', 1], ['My Tickets', 'my-tickets', 'tickets', 0]] as [$title, $alias, $view, $show]) {
+    foreach ([['Request Support', 'request-support', 'request', 0], ['My Tickets', 'my-tickets', 'tickets', 0]] as [$title, $alias, $view, $show]) {
         $m = new Menu($db);
         $m->setLocation($after ?: 1, $after ? 'after' : 'last-child');
         $m->bind([

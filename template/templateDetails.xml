@@ -74,7 +74,7 @@
 
 			<fieldset name="header" label="TPL_PAMPERINS_FIELDSET_HEADER">
 				<field name="helpLabel" type="text" default="Get Help Now" label="TPL_PAMPERINS_HELP_LABEL" filter="string" />
-				<field name="helpUrl" type="text" default="remote-support" label="TPL_PAMPERINS_HELP_URL" description="TPL_PAMPERINS_HELP_URL_DESC" filter="string" />
+				<field name="helpUrl" type="text" default="request-support" label="TPL_PAMPERINS_HELP_URL" description="TPL_PAMPERINS_HELP_URL_DESC" filter="string" />
 				<field name="loginLabel" type="text" default="Customer Login" label="TPL_PAMPERINS_LOGIN_LABEL" filter="string" />
 				<field name="loginUrl" type="text" default="index.php?option=com_users&amp;view=login" label="TPL_PAMPERINS_LOGIN_URL" filter="string" />
 			</fieldset>
