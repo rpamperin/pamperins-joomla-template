@@ -179,7 +179,8 @@ body.pamperins {
 }
 
 .pt-brand { grid-area: brand; display: inline-flex; align-items: center; min-width: 0; }
-.pt-brand img, .pt-logo { display: block; height: 40px; width: auto; max-width: 100%; }
+.pt-brand img, .pt-logo { display: block; height: 42px; width: auto; max-width: 100%; }
+@media (min-width: 992px) { .pt-header .pt-brand img { height: 50px; } }
 
 .pt-header__menu { grid-area: menu; justify-self: end; }
 
@@ -778,7 +779,7 @@ body.pamperins {
 @media (min-width: 992px) { .pt-footer__inner { grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 2.5rem; } }
 
 .pt-footer__brand p { margin: 1rem 0 0; max-width: 22rem; }
-.pt-footer .pt-brand img { height: 36px; }
+.pt-footer .pt-brand img { height: 44px; }
 
 .pt-footer__heading {
   color: #fff;

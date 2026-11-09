@@ -79,8 +79,18 @@ $wa->registerStyle('template.active', '', [], [], ['template.cassiopeia.' . ($th
 // Preload the self-hosted Inter font so text doesn't flash
 $this->getPreloadManager()->preload(Uri::root(true) . '/media/templates/site/pamperins/fonts/inter-latin-wght-normal.woff2', ['as' => 'font', 'type' => 'font/woff2', 'crossorigin' => 'anonymous']);
 
-// Logo
-if ($params->get('logoFile')) {
+// Logo: one of the bundled Pamperins logos, or a custom file.
+// Styles saved before the picker existed keep a custom logo if one was chosen.
+$logoPreset = $params->get('logoPreset');
+
+if ($logoPreset === null) {
+    $logoFile   = (string) $params->get('logoFile', '');
+    $logoPreset = ($logoFile !== '' && $logoFile !== 'images/logo.svg') ? 'custom' : '2-pt-monogram';
+}
+
+if ($logoPreset !== 'custom' && preg_match('/^[0-9a-z-]+$/', $logoPreset)) {
+    $logo = HTMLHelper::_('image', 'logos/' . $logoPreset . '.svg', $sitename, ['class' => 'pt-logo pt-logo--' . $logoPreset, 'loading' => 'eager', 'decoding' => 'async'], true, 0);
+} elseif ($params->get('logoFile')) {
     $logo = HTMLHelper::_('image', Uri::root(false) . htmlspecialchars($params->get('logoFile'), ENT_QUOTES), $sitename, ['class' => 'pt-logo', 'loading' => 'eager', 'decoding' => 'async'], false, 0);
 } else {
     $logo = HTMLHelper::_('image', 'logo.svg', $sitename, ['class' => 'pt-logo', 'loading' => 'eager', 'decoding' => 'async'], true, 0);

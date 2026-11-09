@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="11" fill="#0b1d3a"/><rect x="4" y="4" width="40" height="40" rx="9" fill="#2ea8ff"/><path d="M17 34V14h8.5c4.7 0 7.5 2.6 7.5 6.6s-2.8 6.6-7.5 6.6H22V34z M22 23h3.2c2 0 3.1-.9 3.1-2.4s-1.1-2.4-3.1-2.4H22z" fill="#0b1d3a"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="28 20 120 120">
+  <g transform="translate(28,20)">
+    <rect x="0" y="0" width="120" height="120" rx="22" fill="#2ea8ff"></rect>
+    <g aria-label="PT"><path d="M20.03 84V37.44H40.09Q45.28 37.44 49.17 39.48Q53.06 41.53 55.23 45.25Q57.41 48.97 57.41 53.94Q57.41 58.94 55.19 62.58Q52.97 66.22 48.97 68.2Q44.97 70.19 39.66 70.19H27.66V60.38H37.09Q39.34 60.38 40.94 59.58Q42.53 58.78 43.38 57.34Q44.22 55.91 44.22 53.94Q44.22 51.91 43.38 50.48Q42.53 49.06 40.94 48.31Q39.34 47.56 37.09 47.56H32.66V84H20.03ZM60.78 47.62V37.44H101.22V47.62H87.31V84H74.69V47.62H60.78Z" fill="#0b1d3a"></path></g><path d="M10 100 H40 L50 90 H80 L90 100 H110" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+    <circle cx="10" cy="100" r="5" fill="#fff"></circle><circle cx="110" cy="100" r="5" fill="#fff"></circle>
+  </g>
+  </svg>

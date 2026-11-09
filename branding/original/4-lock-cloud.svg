@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 160">
+  <rect width="560" height="160" rx="16" fill="#0b1d3a"/>
+  <g transform="translate(24,22)">
+    <path d="M30 104 H100 A26 26 0 0 0 98 52 A36 36 0 0 0 30 46 A30 30 0 0 0 30 104 Z" fill="#2ea8ff"/>
+    <path d="M54 66 V56 A12 12 0 0 1 78 56 V66" fill="none" stroke="#0b1d3a" stroke-width="6" stroke-linecap="round"/>
+    <rect x="46" y="64" width="40" height="30" rx="6" fill="#0b1d3a"/>
+    <circle cx="66" cy="78" r="5" fill="#2ea8ff"/><rect x="64" y="80" width="4" height="8" rx="2" fill="#2ea8ff"/>
+  </g>
+  <text x="166" y="82" font-family="Inter, Arial, sans-serif" font-size="46" font-weight="800" fill="#fff">Pamperins</text>
+  <text x="168" y="118" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600" letter-spacing="10" fill="#2ea8ff">TECH</text>
+</svg>

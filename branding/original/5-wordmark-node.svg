@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 160">
+  <defs><radialGradient id="g"><stop offset="0" stop-color="#ffffff"/><stop offset="0.3" stop-color="#2ea8ff"/><stop offset="1" stop-color="#2ea8ff" stop-opacity="0"/></radialGradient></defs>
+  <rect width="560" height="160" rx="16" fill="#0b1d3a"/>
+  <text x="40" y="96" font-family="Inter, Arial, sans-serif" font-size="56" font-weight="800" fill="#ffffff">Pamperins <tspan fill="#2ea8ff">Tech</tspan></text>
+  <path d="M40 120 H290 L304 108 H504" fill="none" stroke="#2ea8ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="512" cy="108" r="18" fill="url(#g)"/>
+  <circle cx="512" cy="108" r="5" fill="#ffffff"/>
+</svg>

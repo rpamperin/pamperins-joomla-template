@@ -21,10 +21,11 @@ template/                     -> becomes the zip (templateDetails.xml at the roo
   language/en-GB/             text strings
   media/css/user.css          ALL styling lives here
   media/fonts/                Inter (SIL Open Font License)
-  media/images/               placeholder logo.svg + favicon.svg
+  media/images/               logos/ (5 header logos), favicon.svg (PT square), placeholder logo.svg
 build.sh                      -> pamperins-template.zip
 docker-compose.yml            local Joomla 5 + MySQL test site
 dev/seed-local.php            demo content for the local test site only
+branding/                     source logos + text-to-paths.py
 screenshots/                  desktop and phone renders from the local test
 ```
 
@@ -61,7 +62,7 @@ Remove everything with `docker compose down -v`.
    - *Header Buttons*: set **Help Button Link** to your ticket system URL (e.g. `https://support.pamperins.com`) or a menu alias.
    - *Home Page Hero*: set **Booking Button Link** (Calendly / Google booking page) and **Remote Support (RSUP) Link**.
    - *Footer Contact Info*: set your real phone, email, service area and hours.
-   - *Advanced*: choose your real logo (upload it to `/images/` first, or replace `/images/logo.svg`).
+   - *Advanced → Logo*: pick one of the five Pamperins Tech logos (default: PT monogram), or **Custom** to use your own file.
    - Save, then click the **star** next to Pamperins - Default to make it the site template.
 5. **Content → Site Modules** → open your **Main Menu** module → set Position **menu**, turn *Show Title* off, and set *Advanced → Layout* to **Collapsible Dropdown**. Unpublish any modules you don't want (e.g. the sidebar Login Form).
 6. Optional menu items: create a **Customer Login** item (*Users → Login Form*) and a **Get Help** item (*Contacts → Single Contact*, alias `get-help`). Both work as hidden items.
@@ -86,4 +87,8 @@ Remove everything with `docker compose down -v`.
   ```
   The middle plan (3rd column) is highlighted as "Most popular". If the table has no label column, use
   `class="pt-pricing pt-pricing--plans-only"`. To highlight specific cells instead, add `class="featured"` to them.
+- **Logos**: the five logos are in `template/media/images/logos/` (header versions, no background).
+  `branding/original/` has the source files and `branding/outlined/` the same files with the text turned into
+  shapes, so they look identical on every device. After editing a source logo, rerun:
+  `pip install fonttools brotli uharfbuzz && python3 branding/text-to-paths.py branding/original/*.svg --out branding/outlined`
 - **Colors / spacing**: change the variables at the top of `template/media/css/user.css`.
