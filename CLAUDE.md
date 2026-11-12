@@ -9,7 +9,7 @@ also tested on Joomla 5.4. Two installable packages:
    choose one of 7 kinds of help, fill in the matching form, and follow their tickets. Staff work the
    queue in the admin.
 
-See README.md for features, and **docs/DEPLOY.md for installing or updating the live server**.
+See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** Existing Joomla site / updates: docs/DEPLOY.md.
 
 ## Rules
 
@@ -26,7 +26,7 @@ See README.md for features, and **docs/DEPLOY.md for installing or updating the 
 - New files or folders must be listed in the manifest's `<files>` / `<media>` sections, or they won't be installed.
 - Use Joomla 6-safe APIs: `$this->getDatabase()` (not `getDbo()`), `MailerFactoryInterface` (not `Factory::getMailer()`),
   `$app->getIdentity()` (not `Factory::getUser()`).
-- **Live server:** follow docs/DEPLOY.md. Back up first, show commands before running them, never ask for passwords
+- **Servers:** follow docs/NEW-SERVER.md (fresh server) or docs/DEPLOY.md. Back up first, show commands before running them, never ask for passwords
   in chat, and **never run `dev/seed-local.php` on the live site**.
 
 ## Layout
@@ -47,10 +47,17 @@ See README.md for features, and **docs/DEPLOY.md for installing or updating the 
     `COM_PTICKETS_TYPE_<KEY>` strings, add it to `admin/forms/filter_tickets.xml`, and add a `.pt-card--t-<key>` icon in user.css
 - `content/remote-support.html`: Remote Support page, pasted into a Joomla article on the live site
 - `docs/DEPLOY.md`: live-server runbook (Part A test copy at a subdomain, steps 1–7 install, Part B go live).
+- `docs/NEW-SERVER.md`: fresh Ubuntu 24.04 server → Joomla 6.2 + this site at a subdomain, then switching pamperins.com over.
+- `deploy/new-server.sh`: the one-shot installer used by NEW-SERVER.md (Apache, PHP 8.3, MariaDB, verified Joomla download,
+  vhost, HTTPS, both packages, then `setup-site.php`). The owner runs it in their own terminal; it asks for the admin
+  password on the server. Rehearsed on a blank Ubuntu 24.04 container.
+- `deploy/setup-site.php`: creates the pages, menus, contact, ticket pages and settings on a **fresh** site (idempotent).
+  `dev/seed-local.php` just calls it with `--local`.
+- `deploy/backup.sh`: `sudo bash backup.sh <site-folder>` / `--restore <site-folder> <date>` → the owner's `~/backups`.
 - `deploy/make-test-copy.sh` / `deploy/go-live.sh`: run **on the server** (with sudo) by the runbook; tested locally.
   `make-test-copy` only reads the live site; `go-live` asks for `YES` and keeps the live `configuration.php`.
 - `docs/support-integration-reply.md`: notes for the support (RSUP) server
-- `dev/seed-local.php`: demo content for the **local Docker site only**
+- `dev/seed-local.php`: demo content for the **local Docker site only** (test shortcuts: no activation e-mail)
 - `screenshots/`: desktop and phone renders from the local test site
 
 ## Build

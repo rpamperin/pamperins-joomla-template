@@ -59,7 +59,8 @@ Remove everything with `docker compose down -v`.
 
 ## Install on the live site
 
-> Using Claude Code? Follow **docs/DEPLOY.md** (backup, install over SSH, settings, e-mail, checks, restore).
+> **New server?** Follow **docs/NEW-SERVER.md**: one script installs Joomla 6.2 and the whole site.
+> Existing Joomla site? Follow **docs/DEPLOY.md** (backup, install over SSH, settings, e-mail, checks, restore).
 
 1. **Back up** the site first (Akeeba Backup, or your host's backup).
 2. Run `./build.sh` (or use a `pamperins-template.zip` you already built).

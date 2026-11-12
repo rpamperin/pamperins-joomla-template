@@ -10,6 +10,10 @@ What gets installed:
 | `pamperins-template.zip` | Site template: header, home page, styling, login pages |
 | `pamperins-support-tickets.zip` | Support Tickets extension: request forms, My Tickets, staff queue |
 
+> **New server with nothing on it yet?** Use **docs/NEW-SERVER.md** instead: one script installs Joomla 6.2 and the whole site.
+> On servers set up that way, `configuration.php` is readable only by the web server, so use `deploy/backup.sh`
+> (NEW-SERVER.md step 7) instead of step 3 below.
+
 ## Ground rules
 
 - **Back up before changing anything** (step 3), and confirm the backup files exist and aren't empty.
