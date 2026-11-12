@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="details">
+		<fieldset name="details" label="COM_PTICKETS_FIELDSET_DETAILS">
+			<field name="job" type="list" label="COM_PTICKETS_F_PLC_JOB" required="true" validate="options">
+				<option value="">JSELECT</option>
+				<option value="new">COM_PTICKETS_O_PLC_JOB_NEW</option>
+				<option value="modify">COM_PTICKETS_O_PLC_JOB_MODIFY</option>
+				<option value="troubleshoot">COM_PTICKETS_O_PLC_JOB_TROUBLESHOOT</option>
+				<option value="migrate">COM_PTICKETS_O_PLC_JOB_MIGRATE</option>
+				<option value="network">COM_PTICKETS_O_PLC_JOB_NETWORK</option>
+				<option value="other">COM_PTICKETS_O_OTHER</option>
+			</field>
+			<field name="scope" type="checkboxes" label="COM_PTICKETS_F_PLC_SCOPE">
+				<option value="plc">COM_PTICKETS_O_PLC_SCOPE_PLC</option>
+				<option value="hmi">COM_PTICKETS_O_PLC_SCOPE_HMI</option>
+				<option value="scada">COM_PTICKETS_O_PLC_SCOPE_SCADA</option>
+				<option value="network">COM_PTICKETS_O_PLC_SCOPE_NETWORK</option>
+				<option value="remote">COM_PTICKETS_O_PLC_SCOPE_REMOTE</option>
+				<option value="data">COM_PTICKETS_O_PLC_SCOPE_DATA</option>
+				<option value="custom">COM_PTICKETS_O_PLC_SCOPE_CUSTOM</option>
+				<option value="docs">COM_PTICKETS_O_PLC_SCOPE_DOCS</option>
+			</field>
+			<field name="plc_brand" type="checkboxes" label="COM_PTICKETS_F_PLC_BRAND">
+				<option value="rockwell">Allen-Bradley / Rockwell</option>
+				<option value="siemens">Siemens</option>
+				<option value="automationdirect">AutomationDirect</option>
+				<option value="omron">Omron</option>
+				<option value="mitsubishi">Mitsubishi</option>
+				<option value="schneider">Schneider / Modicon</option>
+				<option value="codesys">CODESYS-based</option>
+				<option value="other">COM_PTICKETS_O_OTHER</option>
+				<option value="unsure">COM_PTICKETS_O_NOT_SURE</option>
+			</field>
+			<field name="hmi_scada" type="checkboxes" label="COM_PTICKETS_F_PLC_HMI">
+				<option value="factorytalk">FactoryTalk View / Optix</option>
+				<option value="ignition">Ignition</option>
+				<option value="wincc">Siemens WinCC</option>
+				<option value="aveva">AVEVA / Wonderware</option>
+				<option value="cmore">C-more</option>
+				<option value="nodered">Node-RED</option>
+				<option value="other">COM_PTICKETS_O_OTHER</option>
+				<option value="none">COM_PTICKETS_O_PLC_NONE_YET</option>
+			</field>
+			<field name="protocols" type="checkboxes" label="COM_PTICKETS_F_PLC_PROTOCOLS">
+				<option value="enip">EtherNet/IP</option>
+				<option value="modbus">Modbus TCP / RTU</option>
+				<option value="profinet">PROFINET</option>
+				<option value="opcua">OPC UA</option>
+				<option value="mqtt">MQTT</option>
+				<option value="serial">COM_PTICKETS_O_PLC_SERIAL</option>
+				<option value="unsure">COM_PTICKETS_O_NOT_SURE</option>
+			</field>
+			<field name="equipment" type="textarea" rows="3" label="COM_PTICKETS_F_PLC_EQUIPMENT" hint="COM_PTICKETS_F_PLC_EQUIPMENT_HINT" filter="string" />
+			<field name="io_count" type="list" label="COM_PTICKETS_F_PLC_IO" validate="options">
+				<option value="unsure">COM_PTICKETS_O_NOT_SURE</option>
+				<option value="small">COM_PTICKETS_O_PLC_IO_SMALL</option>
+				<option value="medium">COM_PTICKETS_O_PLC_IO_MEDIUM</option>
+				<option value="large">COM_PTICKETS_O_PLC_IO_LARGE</option>
+			</field>
+			<field name="onsite" type="radio" label="COM_PTICKETS_F_PLC_ONSITE" default="maybe" layout="joomla.form.field.radio.buttons" validate="options">
+				<option value="yes">JYES</option>
+				<option value="maybe">COM_PTICKETS_O_NOT_SURE</option>
+				<option value="no">COM_PTICKETS_O_PLC_REMOTE_OK</option>
+			</field>
+			<field name="city" type="text" label="COM_PTICKETS_F_AUTO_LOCATION" filter="string" maxlength="120" />
+			<field name="downtime" type="text" label="COM_PTICKETS_F_PLC_DOWNTIME" hint="COM_PTICKETS_F_PLC_DOWNTIME_HINT" filter="string" maxlength="200" />
+			<field name="budget" type="list" label="COM_PTICKETS_F_BUDGET" validate="options">
+				<option value="unsure">COM_PTICKETS_O_NOT_SURE</option>
+				<option value="lt1k">COM_PTICKETS_O_BUDGET_1</option>
+				<option value="1-3k">COM_PTICKETS_O_BUDGET_2</option>
+				<option value="3-10k">COM_PTICKETS_O_BUDGET_3</option>
+				<option value="10k+">COM_PTICKETS_O_BUDGET_4</option>
+			</field>
+			<field name="deadline" type="text" label="COM_PTICKETS_F_DEADLINE" filter="string" maxlength="100" />
+		</fieldset>
+	</fields>
+</form>

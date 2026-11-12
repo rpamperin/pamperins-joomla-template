@@ -8,7 +8,7 @@ A child template of Cassiopeia for **pamperins.com** (locally owned IT services,
 - Styled pricing tables, contact page/forms, and branded customer login / registration / password reset.
 - Footer: phone, email, service area, hours and copyright, all edited in the template settings.
 
-- **Support tickets** (separate extension): customers create an account, choose one of 7 kinds of help, fill in the
+- **Support tickets** (separate extension): customers create an account, choose one of 8 kinds of help (incl. PLC, HMI & SCADA programming), fill in the
   matching form, and follow their tickets. Staff work the queue under **Components → Support Tickets**.
 
 Cassiopeia itself is never edited. This template reuses Cassiopeia's CSS and JS, so Joomla updates keep working.
@@ -96,7 +96,7 @@ Remove everything with `docker compose down -v`.
 
 | Who | Where | What |
 |---|---|---|
-| Customer | **Get Help Now** → `/request-support` | Not logged in: asked to create an account or log in. Then: choose *Get support* (Remote Computer Help, On-site Visit, Network/Wi-Fi/Security) or *Start a project* (Website, Software Development, AI Integration, Automation), and fill in the form for that job. |
+| Customer | **Get Help Now** → `/request-support` | Not logged in: asked to create an account or log in. Then: choose *Get support* (Remote Computer Help, On-site Visit, Network/Wi-Fi/Security) or *Start a project* (Website, Custom Programming & Software, PLC/HMI & SCADA Programming, AI Integration, Home & Building Automation), and fill in the form for that job. |
 | Customer | `/my-tickets` | Their tickets, status (Received → In progress → Waiting for you / Scheduled → Resolved → Closed), staff replies, and a reply box. Remote tickets show a **Get Remote Support** button. |
 | Staff | Admin → Components → Support Tickets | Queue (shows tickets that still need work by default; filter by status, type or priority; search). Open a ticket to see the customer's answers, change status/priority, assign a technician, reply (e-mailed to the customer) or add an internal note. |
 
@@ -105,6 +105,12 @@ Remove everything with `docker compose down -v`.
 - **Moving to RSUP later:** every ticket has `external_system` / `external_id` columns, and the extension fires
   `onPticketsAfterCreate`, `onPticketsAfterReply` and `onPticketsAfterUpdate` events (plugin group `ptickets`).
   A small plugin can copy tickets to the support server's API when that exists.
+
+## Updating a live site
+
+Build, back up, install both zips again (it's an upgrade), then re-run `deploy/setup-site.php` **without** `--phone`/`--email`.
+The re-run only adds what's missing: new home-page cards, new Services sections, repaired links. It never changes
+settings or text you've edited. See docs/NEW-SERVER.md "Updating the site later".
 
 ## Editing content
 

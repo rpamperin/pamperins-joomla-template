@@ -19,6 +19,7 @@
 			<option value="network">COM_PTICKETS_TYPE_NETWORK</option>
 			<option value="website">COM_PTICKETS_TYPE_WEBSITE</option>
 			<option value="software">COM_PTICKETS_TYPE_SOFTWARE</option>
+			<option value="plc">COM_PTICKETS_TYPE_PLC</option>
 			<option value="ai">COM_PTICKETS_TYPE_AI</option>
 			<option value="automation">COM_PTICKETS_TYPE_AUTOMATION</option>
 		</field>
