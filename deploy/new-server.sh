@@ -24,6 +24,7 @@ say()  { printf '\n\033[1;34m== %s\033[0m\n' "$*"; }
 die()  { printf '\n\033[1;31mSTOPPED: %s\033[0m\n' "$*" >&2; exit 1; }
 svc()  { systemctl enable --now "$1" >/dev/null 2>&1 || service "$1" start >/dev/null; }          # works with or without systemd
 restart_svc() { systemctl restart "$1" 2>/dev/null || { service "$1" stop >/dev/null 2>&1 || true; sleep 1; service "$1" start >/dev/null; }; }
+cnfq() { local v=${1//\\/\\\\}; printf '%s' "${v//\"/\\\"}"; }   # escape \ and " for a MySQL option file
 reload_apache() { systemctl reload apache2 2>/dev/null || service apache2 reload >/dev/null || apache2ctl graceful; }
 
 # ---------- 0. Checks ----------
@@ -52,7 +53,7 @@ DNS_OK=0; [ -n "$MYIP" ] && [ "$MYIP" = "$DNSIP" ] && DNS_OK=1
 # sites keep their PHP version and settings; an existing MySQL/MariaDB or certbot is reused, not replaced.
 say "Installing Apache, PHP 8.3, database, certbot (only what's missing)"
 export DEBIAN_FRONTEND=noninteractive
-PKGS="apache2 php8.3-fpm php8.3-cli php8.3-mysql php8.3-xml php8.3-mbstring php8.3-intl php8.3-zip php8.3-gd php8.3-curl unzip curl ca-certificates python3"
+PKGS="apache2 iproute2 php8.3-fpm php8.3-cli php8.3-mysql php8.3-xml php8.3-mbstring php8.3-intl php8.3-zip php8.3-gd php8.3-curl unzip curl ca-certificates python3"
 if [ -n "$DB_SERVER" ]; then
   echo "  database on $DB_SERVER — not installing a local database server"; HAVE_DB=1; PKGS="$PKGS mariadb-client"
 elif command -v mysqld >/dev/null || command -v mariadbd >/dev/null || dpkg -s mysql-server >/dev/null 2>&1 || dpkg -s mariadb-server >/dev/null 2>&1; then
@@ -109,11 +110,11 @@ MYSQL="mysql"
 DBHOSTS="localhost 127.0.0.1"            # where the web server connects from (as MySQL sees it)
 if [ -n "$DB_SERVER" ]; then
   # Remote database: ask (hidden) for an admin login on that server, keep it only in a temp file for this run
-  WEBIP=$(ip -4 route get "$DB_SERVER" | grep -oP 'src \K[0-9.]+')
+  WEBIP=$(ip -4 route get "$DB_SERVER" 2>/dev/null | grep -oP 'src \K[0-9.]+' || true)
   [ -n "$WEBIP" ] || die "can't work out this server's address towards $DB_SERVER"
   read -r -p "  Admin username for the database on $DB_SERVER: " MUSER
   read -r -s -p "  Its password (typed here, not shown): " MPW; echo
-  MYCNF=$(mktemp); chmod 600 "$MYCNF"; printf '[client]\nhost=%s\nuser=%s\npassword="%s"\n' "$DB_SERVER" "$MUSER" "$MPW" > "$MYCNF"; unset MPW
+  MYCNF=$(mktemp); chmod 600 "$MYCNF"; printf '[client]\nhost=%s\nuser="%s"\npassword="%s"\n' "$DB_SERVER" "$(cnfq "$MUSER")" "$(cnfq "$MPW")" > "$MYCNF"; unset MPW
   trap 'rm -rf "${TMPD:-}" "$MYCNF"' EXIT
   MYSQL="mysql --defaults-extra-file=$MYCNF"
   $MYSQL -e "SELECT 1" >/dev/null 2>&1 || die "can't log into the database on $DB_SERVER as $MUSER"
@@ -121,7 +122,7 @@ if [ -n "$DB_SERVER" ]; then
 elif ! mysql -e "SELECT 1" >/dev/null 2>&1; then
   # Existing MySQL that uses a root password: ask once (hidden), keep it only in a temp file for this run
   read -r -s -p "  MySQL root password (typed here, not shown): " MPW; echo
-  MYCNF=$(mktemp); chmod 600 "$MYCNF"; printf '[client]\nuser=root\npassword="%s"\n' "$MPW" > "$MYCNF"; unset MPW
+  MYCNF=$(mktemp); chmod 600 "$MYCNF"; printf '[client]\nuser=root\npassword="%s"\n' "$(cnfq "$MPW")" > "$MYCNF"; unset MPW
   trap 'rm -rf "${TMPD:-}" "$MYCNF"' EXIT
   MYSQL="mysql --defaults-extra-file=$MYCNF"
   $MYSQL -e "SELECT 1" >/dev/null 2>&1 || die "can't log into MySQL as root"
@@ -183,7 +184,7 @@ INSTALL_OUT=$(sudo -u www-data php8.3 "$DIR/installation/joomla.php" install -n 
 RC=$?
 set -e
 echo "$INSTALL_OUT" | grep -E "OK|ERROR|rror" | tail -4
-[ $RC = 0 ] || die "Joomla installer failed (see the lines above). Nothing else was changed; to retry: drop database '$DB'${DB_SERVER:+ on $DB_SERVER} and sudo rm -rf $DIR"
+[ $RC = 0 ] || die "Joomla installer failed (see the lines above). Nothing else was changed; to retry: drop database '$DB' and user '$DBUSER'${DB_SERVER:+ on $DB_SERVER}, then sudo rm -rf $DIR"
 unset APW APW2 DBPW
 [ -f "$DIR/configuration.php" ] || die "Joomla install did not finish"
 rm -rf "$DIR/installation"

@@ -109,6 +109,28 @@ run this once the subdomain points to the server:
 ssh -t $SERVER "sudo certbot --apache -d $SITE -m help@pamperins.com --agree-tos --redirect"
 ```
 
+### Database on another server (`DB_SERVER`)
+
+If the databases live on a separate MySQL/MariaDB server, add `DB_SERVER=<its address>`. Pamperins does this:
+all databases live on 10.0.2.2, and **no database server is ever installed on the Raspberry Pis**. Then:
+
+- No database server is installed locally, only the `mariadb-client` tools (needed by the installer and `backup.sh`).
+- The script asks (hidden, on the server) for an **admin login on that database server**: an account that can create
+  databases and users, like the phpMyAdmin admin.
+- It creates the database (name from `DB=`, e.g. `pamperins_new`) and a user with the same name. The user may only
+  connect from **this server's IP address** (not a hostname), and only to that one database.
+- It checks the web server can really connect before installing Joomla.
+
+```bash
+ssh -t gateway 'sudo DB_SERVER=10.0.2.2 DB=pamperins_new PHONE="(920) 328-3293" bash ~/pamperins-setup/new-server.sh new.pamperins.com you@example.com'
+```
+
+Other options: `FPM_MAX_CHILDREN` (default 4: max PHP workers for this site, kept low for small machines without swap)
+and `FORCE_HTTPS=1` (run certbot even when this server resolves the name differently from the outside world, e.g. Pi-hole).
+
+Rehearsed: blank Ubuntu 24.04 + a separate MySQL server. No local DB server was installed, 78 tables were created
+remotely, the user was tied to the web server's IP, 24/24 page checks and the ticket flow passed, and backup.sh worked.
+
 ## 5. E-mail (important)
 
 New customer accounts, password resets and every ticket notice need e-mail. A brand-new server usually **can't
