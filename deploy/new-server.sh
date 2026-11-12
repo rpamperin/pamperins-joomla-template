@@ -15,8 +15,10 @@ EMAIL=${2:?your e-mail (Joomla admin + HTTPS certificate notices)}
 JVER=${3:-6.2.0}
 KIT=$(cd "$(dirname "$0")" && pwd)       # folder with this script, setup-site.php, remote-support.html and the zips
 DIR=/var/www/$SITE
-DB=pamperins; DBUSER=pamperins
+DB=${DB:-pamperins}; DBUSER=${DBUSER:-$DB}
+DB_SERVER=${DB_SERVER:-}                 # optional: use an existing MySQL/MariaDB on another machine (e.g. 10.0.2.2)
 PHONE=${PHONE:-"(920) 555-0100"}
+FORCE_HTTPS=${FORCE_HTTPS:-0}             # 1 = run certbot even if this server resolves the name differently (split DNS)
 
 say()  { printf '\n\033[1;34m== %s\033[0m\n' "$*"; }
 die()  { printf '\n\033[1;31mSTOPPED: %s\033[0m\n' "$*" >&2; exit 1; }
@@ -42,6 +44,7 @@ MYIP=$(curl -fsS -m 10 https://api.ipify.org || true)
 DNSIP=$(getent ahostsv4 "$SITE" | awk 'NR==1{print $1}' || true)
 echo "  this server's public IP: ${MYIP:-unknown}   $SITE points to: ${DNSIP:-nothing yet}"
 DNS_OK=0; [ -n "$MYIP" ] && [ "$MYIP" = "$DNSIP" ] && DNS_OK=1
+[ "$FORCE_HTTPS" = 1 ] && DNS_OK=1
 [ $DNS_OK = 1 ] || echo "  (DNS doesn't point here yet: the site will be installed, and HTTPS is skipped — rerun the certbot line at the end later)"
 
 # ---------- 1. Packages ----------
@@ -50,7 +53,9 @@ DNS_OK=0; [ -n "$MYIP" ] && [ "$MYIP" = "$DNSIP" ] && DNS_OK=1
 say "Installing Apache, PHP 8.3, database, certbot (only what's missing)"
 export DEBIAN_FRONTEND=noninteractive
 PKGS="apache2 php8.3-fpm php8.3-cli php8.3-mysql php8.3-xml php8.3-mbstring php8.3-intl php8.3-zip php8.3-gd php8.3-curl unzip curl ca-certificates python3"
-if command -v mysqld >/dev/null || command -v mariadbd >/dev/null || dpkg -s mysql-server >/dev/null 2>&1 || dpkg -s mariadb-server >/dev/null 2>&1; then
+if [ -n "$DB_SERVER" ]; then
+  echo "  database on $DB_SERVER — not installing a local database server"; HAVE_DB=1; PKGS="$PKGS mariadb-client"
+elif command -v mysqld >/dev/null || command -v mariadbd >/dev/null || dpkg -s mysql-server >/dev/null 2>&1 || dpkg -s mariadb-server >/dev/null 2>&1; then
   echo "  database server already installed — using it"; HAVE_DB=1
 else
   PKGS="$PKGS mariadb-server"; HAVE_DB=0
@@ -62,7 +67,7 @@ else
   PKGS="$PKGS certbot python3-certbot-apache"
 fi
 apt-get update -qq
-apt-get install -y -qq $PKGS >/dev/null
+apt-get install -y -qq --no-upgrade $PKGS >/dev/null
 php8.3 -v | head -1
 a2enmod -q proxy_fcgi setenvif rewrite headers expires >/dev/null
 
@@ -78,10 +83,10 @@ listen = $SOCK
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
-pm.max_children = 10
-pm.start_servers = 2
+pm.max_children = ${FPM_MAX_CHILDREN:-4}
+pm.start_servers = 1
 pm.min_spare_servers = 1
-pm.max_spare_servers = 3
+pm.max_spare_servers = 2
 php_admin_value[upload_max_filesize] = 32M
 php_admin_value[post_max_size] = 32M
 php_admin_value[memory_limit] = 256M
@@ -91,7 +96,7 @@ POOLCONF
 php-fpm8.3 -t 2>&1 | grep -q "test is successful" || die "PHP-FPM config test failed"
 [ "$HAVE_DB" = 1 ] || svc mariadb
 systemctl enable php8.3-fpm >/dev/null 2>&1 || true
-restart_svc php8.3-fpm
+systemctl reload php8.3-fpm 2>/dev/null || restart_svc php8.3-fpm
 for i in $(seq 1 15); do [ -S "$SOCK" ] && break; sleep 1; done
 [ -S "$SOCK" ] || die "PHP 8.3 for this site didn't start (no $SOCK) — see /var/log/php8.3-fpm.log"
 echo "  PHP 8.3 pool for $SITE is running"
@@ -99,9 +104,21 @@ svc apache2
 if command -v ufw >/dev/null && ufw status | grep -q "Status: active"; then ufw allow 'Apache Full' >/dev/null; echo "  firewall: opened web ports"; fi
 
 # ---------- 2. Database ----------
-say "Creating database '$DB'"
+say "Creating database '$DB'${DB_SERVER:+ on $DB_SERVER}"
 MYSQL="mysql"
-if ! mysql -e "SELECT 1" >/dev/null 2>&1; then
+DBHOSTS="localhost 127.0.0.1"            # where the web server connects from (as MySQL sees it)
+if [ -n "$DB_SERVER" ]; then
+  # Remote database: ask (hidden) for an admin login on that server, keep it only in a temp file for this run
+  WEBIP=$(ip -4 route get "$DB_SERVER" | grep -oP 'src \K[0-9.]+')
+  [ -n "$WEBIP" ] || die "can't work out this server's address towards $DB_SERVER"
+  read -r -p "  Admin username for the database on $DB_SERVER: " MUSER
+  read -r -s -p "  Its password (typed here, not shown): " MPW; echo
+  MYCNF=$(mktemp); chmod 600 "$MYCNF"; printf '[client]\nhost=%s\nuser=%s\npassword="%s"\n' "$DB_SERVER" "$MUSER" "$MPW" > "$MYCNF"; unset MPW
+  trap 'rm -rf "${TMPD:-}" "$MYCNF"' EXIT
+  MYSQL="mysql --defaults-extra-file=$MYCNF"
+  $MYSQL -e "SELECT 1" >/dev/null 2>&1 || die "can't log into the database on $DB_SERVER as $MUSER"
+  DBHOSTS="$WEBIP"
+elif ! mysql -e "SELECT 1" >/dev/null 2>&1; then
   # Existing MySQL that uses a root password: ask once (hidden), keep it only in a temp file for this run
   read -r -s -p "  MySQL root password (typed here, not shown): " MPW; echo
   MYCNF=$(mktemp); chmod 600 "$MYCNF"; printf '[client]\nuser=root\npassword="%s"\n' "$MPW" > "$MYCNF"; unset MPW
@@ -111,22 +128,19 @@ if ! mysql -e "SELECT 1" >/dev/null 2>&1; then
 fi
 [ -z "$($MYSQL -N -e "SHOW DATABASES LIKE '$DB'")" ] || die "database '$DB' already exists"
 DBPW=$(head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n')
-$MYSQL <<SQL
-CREATE DATABASE \`$DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER IF NOT EXISTS '$DBUSER'@'localhost' IDENTIFIED BY '$DBPW';
-ALTER USER '$DBUSER'@'localhost' IDENTIFIED BY '$DBPW';
-GRANT ALL PRIVILEGES ON \`$DB\`.* TO '$DBUSER'@'localhost';
-CREATE USER IF NOT EXISTS '$DBUSER'@'127.0.0.1' IDENTIFIED BY '$DBPW';
-ALTER USER '$DBUSER'@'127.0.0.1' IDENTIFIED BY '$DBPW';
-GRANT ALL PRIVILEGES ON \`$DB\`.* TO '$DBUSER'@'127.0.0.1';
-FLUSH PRIVILEGES;
-SQL
+{ echo "CREATE DATABASE \`$DB\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+  for h in $DBHOSTS; do
+    echo "CREATE USER IF NOT EXISTS '$DBUSER'@'$h' IDENTIFIED BY '$DBPW';"
+    echo "ALTER USER '$DBUSER'@'$h' IDENTIFIED BY '$DBPW';"
+    echo "GRANT ALL PRIVILEGES ON \`$DB\`.* TO '$DBUSER'@'$h';"
+  done
+  echo "FLUSH PRIVILEGES;"; } | $MYSQL
 # Which way can the web server reach the database? (socket "localhost" normally; TCP 127.0.0.1 if the socket is locked)
 DBHOST=""
-for h in localhost 127.0.0.1; do
+for h in ${DB_SERVER:-localhost 127.0.0.1}; do
   if DBPW="$DBPW" sudo -E -u www-data php8.3 -r 'mysqli_report(MYSQLI_REPORT_OFF); $m=@new mysqli($argv[1], $argv[2], getenv("DBPW"), $argv[3]); exit($m->connect_errno ? 1 : 0);' "$h" "$DBUSER" "$DB" 2>/dev/null; then DBHOST=$h; break; fi
 done
-[ -n "$DBHOST" ] || die "the web server (www-data) can't connect to the database by socket or by 127.0.0.1"
+[ -n "$DBHOST" ] || die "the web server (www-data) can't connect to the database at ${DB_SERVER:-localhost (socket) or 127.0.0.1}"
 echo "  database + user '$DBUSER' created; web server connects via $DBHOST (password generated, stored only in Joomla's configuration.php)"
 
 # ---------- 3. Joomla download (verified) ----------
@@ -169,7 +183,7 @@ INSTALL_OUT=$(sudo -u www-data php8.3 "$DIR/installation/joomla.php" install -n 
 RC=$?
 set -e
 echo "$INSTALL_OUT" | grep -E "OK|ERROR|rror" | tail -4
-[ $RC = 0 ] || die "Joomla installer failed (see the lines above). Nothing else was changed; to retry: sudo mysql -e 'DROP DATABASE $DB' and sudo rm -rf $DIR"
+[ $RC = 0 ] || die "Joomla installer failed (see the lines above). Nothing else was changed; to retry: drop database '$DB'${DB_SERVER:+ on $DB_SERVER} and sudo rm -rf $DIR"
 unset APW APW2 DBPW
 [ -f "$DIR/configuration.php" ] || die "Joomla install did not finish"
 rm -rf "$DIR/installation"
