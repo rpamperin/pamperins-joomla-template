@@ -49,8 +49,9 @@ See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** E
 - `docs/DEPLOY.md`: live-server runbook (Part A test copy at a subdomain, steps 1–7 install, Part B go live).
 - `docs/NEW-SERVER.md`: fresh Ubuntu 24.04 server → Joomla 6.2 + this site at a subdomain, then switching pamperins.com over.
 - `deploy/new-server.sh`: the one-shot installer used by NEW-SERVER.md (Apache, PHP 8.3, MariaDB, verified Joomla download,
-  vhost, HTTPS, both packages, then `setup-site.php`). The owner runs it in their own terminal; it asks for the admin
-  password on the server. Rehearsed on a blank Ubuntu 24.04 container.
+  Apache site, own PHP 8.3-FPM pool, HTTPS, both packages, then `setup-site.php`). Safe next to existing Apache sites
+  (reuses existing MySQL/certbot, never replaces them). The owner runs it in their own terminal; it asks for the admin
+  password on the server. Rehearsed on a blank Ubuntu 24.04 container and on one with an existing Apache site + MySQL.
 - `deploy/setup-site.php`: creates the pages, menus, contact, ticket pages and settings on a **fresh** site (idempotent).
   `dev/seed-local.php` just calls it with `--local`.
 - `deploy/backup.sh`: `sudo bash backup.sh <site-folder>` / `--restore <site-folder> <date>` → the owner's `~/backups`.

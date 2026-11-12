@@ -5,7 +5,18 @@ subdomain such as `new.pamperins.com`, starting from nothing. One script does th
 
 `deploy/new-server.sh` installs Apache, PHP 8.3 and MariaDB, then downloads Joomla 6.2 and checks it is the
 official package. It installs Joomla, sets up the website address and HTTPS, installs the Pamperins template and
-Support Tickets, and creates the pages and menus. It was rehearsed end to end on a blank Ubuntu 24.04 machine.
+Support Tickets, and creates the pages and menus. It was rehearsed end to end on two Ubuntu 24.04 machines: a blank
+one, and one that already ran Apache with another website plus MySQL and certbot.
+
+### What it creates for the subdomain
+
+| | Where | Notes |
+|---|---|---|
+| **Site folder** | `/var/www/<subdomain>` | Joomla 6.2, owned by `www-data`. The script stops if the folder already has files. |
+| **Apache site** | `/etc/apache2/sites-available/<subdomain>.conf` | `ServerName <subdomain>`, `DocumentRoot` = the folder, `AllowOverride All` (friendly URLs), own error/access logs. Enabled with `a2ensite`, checked with `apache2ctl configtest`, then Apache is **reloaded** (not restarted), so other sites stay up. The script stops if Apache already has a site for that name. |
+| **PHP** | `/etc/php/8.3/fpm/pool.d/pamperins-<subdomain>.conf` | This site's own PHP 8.3 pool, with Joomla's recommended limits. **Other sites keep their PHP version and settings.** |
+| **Database** | `pamperins` (user `pamperins`) | Random password, stored only in Joomla's `configuration.php` (readable only by `www-data`). An existing MySQL/MariaDB server is reused, never replaced. |
+| **HTTPS certificate** | Let's Encrypt via `certbot --apache -d <subdomain> --redirect` | certbot adds `<subdomain>-le-ssl.conf` and sends http to https. It renews automatically. It runs only when the subdomain's DNS points at this server; otherwise the script prints the command to run later. An existing certbot is reused. |
 
 > Moving an **existing** Joomla site instead? Use docs/DEPLOY.md. Updating a site that's already set up? DEPLOY.md step 4.
 
@@ -47,8 +58,9 @@ ssh $SERVER "grep PRETTY_NAME /etc/os-release; curl -s https://api.ipify.org; ec
 - It must be **Ubuntu 24.04** (or newer).
 - The public IP and the subdomain's address should match. If the subdomain shows nothing, DNS hasn't spread yet.
   The install still works, and HTTPS can be added later (the script prints the command).
-- If ports 80/443 are already used by Apache, that's fine: another site is there and ours is added next to it.
-  If they're used by **nginx or something else**, stop and ask: the script is written for Apache.
+- If ports 80/443 are already used by **Apache**, that's fine: the new site is added next to the existing ones,
+  which keep working (rehearsed). If they're used by **nginx or something else**, stop and ask: the script is written for Apache.
+- Show the owner the existing Apache sites so they know what's there: `ssh $SERVER "ls /etc/apache2/sites-enabled/"`.
 - The hosting company's firewall must allow ports **80 and 443**.
 
 ## 3. Upload the setup kit
@@ -70,20 +82,28 @@ ssh -t owner@203.0.113.10 'sudo PHONE="(920) 555-0100" bash ~/pamperins-setup/ne
 
 It takes about 2–5 minutes. It will:
 
-1. Ask for the `sudo` password (normal for the server).
+1. Ask for the `sudo` password (normal for the server). If the server already has MySQL with a root password, it also
+   asks for that once (hidden; kept only in a temp file that's deleted at the end).
 2. Possibly ask the owner to confirm the Joomla download's checksum. This happens only if GitHub couldn't be reached
    for the official one; the owner compares it with the SHA256 on the release page it shows.
 3. Ask for a **Joomla admin username** (not `admin`) and **password** (12+ characters, typed twice, hidden).
    **Write these down somewhere safe.** This is the login for `https://<subdomain>/administrator`.
 
-It stops safely, before changing anything else, if the site folder or the `pamperins` database already exists.
+It stops safely, before changing anything, if the site folder, an Apache site for that name, or the `pamperins`
+database already exists. If it stops part-way, it says why and how to clean up before retrying.
 
 Ask the owner to paste the **output** (not passwords) back here. The end of it shows the site, admin address,
-folder and database. Expected sections: Server checks → Installing Apache, PHP 8.3, MariaDB → Creating database →
-Downloading Joomla (checksum verified) → Installing Joomla → Web server (`answers locally: 200`) → two
-`Extension installed successfully` → Creating pages, menus and settings → HTTPS → Done.
+folder and database. Expected sections: Server checks → Installing Apache, PHP 8.3, database, certbot (`PHP 8.3 pool … is running`) →
+Creating database (`web server connects via localhost` or `127.0.0.1`; both are fine) → Downloading Joomla (checksum verified) →
+Installing Joomla → Web server (`answers locally: 200`) → two `Extension installed successfully` → Creating pages,
+menus and settings → HTTPS → Done. The last lines show the folder, the Apache site file and the PHP pool file.
 
-If HTTPS was skipped (DNS not ready), run this once the subdomain points to the server:
+Then confirm the owner's **other sites** still load (if any), and show them the new Apache file:
+`ssh $SERVER "cat /etc/apache2/sites-available/$SITE.conf; ls /etc/apache2/sites-enabled/"`.
+
+**Certificate:** if the output says `https://<subdomain> is secured`, it's done. Check it in a browser (padlock),
+and check renewal works with `ssh -t $SERVER "sudo certbot renew --dry-run"`. If HTTPS was skipped (DNS not ready),
+run this once the subdomain points to the server:
 
 ```bash
 ssh -t $SERVER "sudo certbot --apache -d $SITE -m help@pamperins.com --agree-tos --redirect"
@@ -162,4 +182,5 @@ When the owner approves the new site, point the main domain at the new server. *
 ## Updating the site later
 
 `git pull` and `./build.sh`. Back up (step 7). Then upload the two zips and install them, as in DEPLOY.md **step 4**,
-with `JOOMLA=/var/www/<site>` and `WEBUSER=www-data`. Installing again is an upgrade: settings, pages and tickets are kept.
+with `JOOMLA=/var/www/<site>` and `WEBUSER=www-data`, and use **`php8.3`** instead of `php` in those commands
+(the server's default `php` may be a different version if it hosts other sites). Installing again is an upgrade: settings, pages and tickets are kept.
