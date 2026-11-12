@@ -1,12 +1,13 @@
-# Local Joomla 5 test site for the Pamperins template.
+# Local Joomla test site (same version as the live server: 6.2).
+#   JOOMLA_TAG=5-php8.3-apache docker compose up -d   -> test on Joomla 5 instead
 #   docker compose up -d      -> http://localhost:8080  (admin: /administrator)
 #   docker compose down -v    -> remove everything, including the database
 services:
   joomla:
-    image: joomla:5-php8.3-apache
+    image: joomla:${JOOMLA_TAG:-6.2-php8.3-apache}
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "${PORT:-8080}:80"
     environment:
       JOOMLA_DB_HOST: db
       JOOMLA_DB_USER: joomla
@@ -40,6 +41,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
+
+  # Catches every e-mail the test site sends: http://localhost:8025 (testing only)
+  mailpit:
+    image: axllent/mailpit:v1.21
+    restart: unless-stopped
+    ports:
+      - "${MAIL_PORT:-8025}:8025"
 
 volumes:
   joomla_data:

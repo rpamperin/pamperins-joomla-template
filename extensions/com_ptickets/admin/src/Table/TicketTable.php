@@ -56,7 +56,7 @@ class TicketTable extends Table
             return false;
         }
 
-        $db    = $this->getDbo();
+        $db    = $this->getDatabase();
         $query = $db->getQuery(true)
             ->delete($db->quoteName('#__ptickets_replies'))
             ->where($db->quoteName('ticket_id') . ' = :id')

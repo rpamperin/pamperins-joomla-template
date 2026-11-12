@@ -23,7 +23,7 @@ Items marked **TO FILL IN** need the owner's answer. No passwords or keys are in
    - Colours: navy `#0b1d3a` (header, footer, dark sections), bright blue `#2ea8ff` (buttons, highlights; use navy `#0b1d3a` text on it), raised navy `#12294f`, link blue on white `#0a6fc2`, light background `#f4f7fb`, body text `#142033`.
    - Logo: PT monogram, file `template/media/images/logos/2-pt-monogram.svg` (for a dark background, text already turned into shapes). Browser-tab icon: `template/media/images/favicon.svg`. Source files: `branding/original/`.
    - Font: **Inter** (bold 700–800 for headings, 400 for body text).
-   - Joomla template: **pamperins**, a child template of **Cassiopeia**, on Joomla 5.
+   - Joomla template: **pamperins**, a child template of **Cassiopeia**, on Joomla 6.2 (tested on 6.2 and 5.4).
    - Buttons are fully rounded ("pill" shape), cards have 14px rounded corners.
 5. **Contact details:** placeholders for now: phone (920) 555-0100, email help@pamperins.com, hours Mon–Fri 8am–6pm, Sat 9am–1pm, emergency support by appointment. **TO FILL IN** with the real ones (set in *Template Style → Footer Contact Info*).
 6. **Pages and wording:** the page address is `/remote-support`. Free diagnostics are mentioned on the page. **TO FILL IN**: prices for remote sessions (the Pricing page shows a placeholder of $45 for the first 30 minutes) and a terms page link if there is one.
