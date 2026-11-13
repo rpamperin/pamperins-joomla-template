@@ -109,6 +109,28 @@ run this once the subdomain points to the server:
 ssh -t $SERVER "sudo certbot --apache -d $SITE -m help@pamperins.com --agree-tos --redirect"
 ```
 
+### Database on another server (`DB_SERVER`)
+
+If the databases live on a separate MySQL/MariaDB server, add `DB_SERVER=<its address>`. Pamperins does this:
+all databases live on 10.0.2.2, and **no database server is ever installed on the Raspberry Pis**. Then:
+
+- No database server is installed locally, only the `mariadb-client` tools (needed by the installer and `backup.sh`).
+- The script asks (hidden, on the server) for an **admin login on that database server**: an account that can create
+  databases and users, like the phpMyAdmin admin.
+- It creates the database (name from `DB=`, e.g. `pamperins_new`) and a user with the same name. The user may only
+  connect from **this server's IP address** (not a hostname), and only to that one database.
+- It checks the web server can really connect before installing Joomla.
+
+```bash
+ssh -t gateway 'sudo DB_SERVER=10.0.2.2 DB=pamperins_new PHONE="(920) 328-3293" bash ~/pamperins-setup/new-server.sh new.pamperins.com you@example.com'
+```
+
+Other options: `FPM_MAX_CHILDREN` (default 4: max PHP workers for this site, kept low for small machines without swap)
+and `FORCE_HTTPS=1` (run certbot even when this server resolves the name differently from the outside world, e.g. Pi-hole).
+
+Rehearsed: blank Ubuntu 24.04 + a separate MySQL server. No local DB server was installed, 78 tables were created
+remotely, the user was tied to the web server's IP, 24/24 page checks and the ticket flow passed, and backup.sh worked.
+
 ## 5. E-mail (important)
 
 New customer accounts, password resets and every ticket notice need e-mail. A brand-new server usually **can't
@@ -181,6 +203,16 @@ When the owner approves the new site, point the main domain at the new server. *
 
 ## Updating the site later
 
-`git pull` and `./build.sh`. Back up (step 7). Then upload the two zips and install them, as in DEPLOY.md **step 4**,
-with `JOOMLA=/var/www/<site>` and `WEBUSER=www-data`, and use **`php8.3`** instead of `php` in those commands
-(the server's default `php` may be a different version if it hosts other sites). Installing again is an upgrade: settings, pages and tickets are kept.
+1. On your computer: `git pull` and `./build.sh`.
+2. Back up (step 7).
+3. Upload the new files: `scp pamperins-template.zip pamperins-support-tickets.zip deploy/setup-site.php content/remote-support.html $SERVER:~/pamperins-setup/`
+4. Install both zips as `www-data` with **php8.3** (it's an upgrade; settings, pages and tickets are kept):
+   ```bash
+   ssh -t $SERVER 'cd /var/www/new.pamperins.com && for z in pamperins-template pamperins-support-tickets; do sudo install -o www-data -g www-data -m 644 ~/pamperins-setup/$z.zip tmp/ && sudo -u www-data php8.3 cli/joomla.php extension:install --path=/var/www/new.pamperins.com/tmp/$z.zip && sudo rm -f tmp/$z.zip; done'
+   ```
+5. Re-run the setup script **without `--phone`/`--email`**. It only adds new home-page cards, Services sections and missing
+   pages, and repairs known broken links. It never overwrites settings or text you've edited:
+   ```bash
+   ssh -t $SERVER 'd=$(sudo mktemp -d /tmp/pt-kit.XXXXXX) && sudo install -m 644 ~/pamperins-setup/setup-site.php ~/pamperins-setup/remote-support.html $d/ && sudo chmod 755 $d && sudo -u www-data php8.3 $d/setup-site.php --joomla=/var/www/new.pamperins.com --content=$d; sudo rm -rf $d'
+   ```
+6. Check the site (step 6) and clear the cache in the admin (System → Clear Cache).

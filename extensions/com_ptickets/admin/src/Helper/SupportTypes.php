@@ -27,6 +27,7 @@ final class SupportTypes
         'network'    => 'support',
         'website'    => 'project',
         'software'   => 'project',
+        'plc'        => 'project',
         'ai'         => 'project',
         'automation' => 'project',
     ];

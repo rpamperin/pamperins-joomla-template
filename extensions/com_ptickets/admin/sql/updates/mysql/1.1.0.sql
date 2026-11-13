@@ -1,0 +1,1 @@
+-- 1.1.0: new request type "plc" (no schema changes)

@@ -182,22 +182,27 @@ return new class () implements ServiceProviderInterface {
 <div class="pt-card pt-card--network">
 <h3>Networking</h3>
 <p>Wi-Fi that reaches every room, wired runs, switches and routers set up right for homes and offices.</p>
-<p><a class="pt-card__link" href="get-help">Plan my network</a></p>
+<p><a class="pt-card__link" href="request-support?type=network">Plan my network</a></p>
 </div>
 <div class="pt-card pt-card--security">
 <h3>Cybersecurity</h3>
 <p>Virus and malware cleanup, backups, password and account hardening, and staff phishing awareness.</p>
-<p><a class="pt-card__link" href="get-help">Secure my devices</a></p>
+<p><a class="pt-card__link" href="request-support?type=network">Secure my devices</a></p>
 </div>
 <div class="pt-card pt-card--web">
 <h3>Web Development</h3>
 <p>Fast, mobile-friendly websites, hosting and updates for local businesses — built to be easy to edit.</p>
-<p><a class="pt-card__link" href="get-help">Start a website</a></p>
+<p><a class="pt-card__link" href="request-support?type=website">Start a website</a></p>
 </div>
 <div class="pt-card pt-card--device">
 <h3>Network Security Device</h3>
 <p>A managed firewall appliance that blocks threats, ads and trackers for your whole home or office network.</p>
-<p><a class="pt-card__link" href="get-help">Ask about the device</a></p>
+<p><a class="pt-card__link" href="request-support?type=network">Ask about the device</a></p>
+</div>
+<div class="pt-card pt-card--plc">
+<h3>PLC, HMI &amp; SCADA</h3>
+<p>PLC and HMI programming, SCADA systems and secure industrial networks, plus custom programming for your equipment.</p>
+<p><a class="pt-card__link" href="request-support?type=plc">Start a project</a></p>
 </div>
 </div>
 HTML;

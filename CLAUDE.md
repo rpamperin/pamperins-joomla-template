@@ -6,7 +6,7 @@ also tested on Joomla 5.4. Two installable packages:
 1. **Site template** `template/`: a **child template of Cassiopeia** (`<parent>cassiopeia</parent>` in
    `template/templateDetails.xml`).
 2. **Support Tickets** extension `extensions/com_ptickets/` (Joomla component `com_ptickets`). Customers
-   choose one of 7 kinds of help, fill in the matching form, and follow their tickets. Staff work the
+   choose one of 8 kinds of help, fill in the matching form, and follow their tickets. Staff work the
    queue in the admin.
 
 See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** Existing Joomla site / updates: docs/DEPLOY.md.
@@ -38,7 +38,7 @@ See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** E
   - `html/com_users/`: login, registration and password reset overrides
   - `media/images/logos/`: the five selectable logos (text already turned into shapes; see `branding/`)
 - `extensions/com_ptickets/` becomes `pamperins-support-tickets.zip` (manifest `ptickets.xml`).
-  - `admin/src/Helper/SupportTypes.php`: the 7 request types, statuses and priorities
+  - `admin/src/Helper/SupportTypes.php`: the 8 request types, statuses and priorities
   - `admin/src/Helper/TicketService.php`: creates tickets and replies, sends e-mails, fires
     `onPticketsAfterCreate` / `onPticketsAfterReply` / `onPticketsAfterUpdate` (for a future RSUP sync)
   - `site/forms/request.xml` (shared questions) + `site/forms/type_<type>.xml` (questions for each type);

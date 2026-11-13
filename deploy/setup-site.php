@@ -5,8 +5,10 @@
  * Support Tickets installed. Creates the pages, menus and settings so the site works
  * straight away; everything can be edited in the admin afterwards.
  *
- * Safe to run again: anything that already exists (same alias) is left alone.
- * Don't run it on a site that already has real content you set up by hand.
+ * Safe to run again (e.g. after installing a newer template/tickets version): it only ADDS what's missing
+ * (pages, menu items, new home-page cards, new Services sections) and fixes known broken links. Settings you may
+ * have changed (footer phone/e-mail, menus, sign-up options) are only set on the FIRST run, or when you pass
+ * --phone / --email explicitly.
  *
  *   sudo -u www-data php setup-site.php --joomla=/var/www/new.pamperins.com \
  *        [--email=help@pamperins.com] [--phone="(920) 555-0100"] [--content=<folder with remote-support.html>]
@@ -84,8 +86,11 @@ $hideInfo    = ['show_category' => '0', 'show_author' => '0', 'show_publish_date
                 'show_modify_date' => '0', 'show_hits' => '0', 'show_item_navigation' => '0', 'show_parent_category' => '0'];
 $menuIdOf    = fn (string $alias) => (int) $q("SELECT id FROM #__menu WHERE alias=" . $db->quote($alias) . " AND client_id=0 AND menutype='mainmenu'");
 $componentId = fn (string $c) => (int) ComponentHelper::getComponent($c)->id;
+$firstRun    = !$menuIdOf('request-support');   // created by the first run
+$phoneGiven  = trim((string) ($opt['phone'] ?? '')) !== '';
+$emailGiven  = trim((string) ($opt['email'] ?? '')) !== '';
 
-echo "Setting up " . JPATH_BASE . ($local ? " (LOCAL TEST MODE)" : '') . "\n";
+echo ($firstRun ? "Setting up " : "Updating ") . JPATH_BASE . ($local ? " (LOCAL TEST MODE)" : '') . "\n";
 
 function pt_article(DatabaseInterface $db, string $title, string $alias, string $html, string $now, int $author, array $attribs): int
 {
@@ -138,7 +143,8 @@ $servicesId = pt_article($db, 'Services', 'services', <<<'HTML'
 <h2>Networking</h2><p>Home and office Wi-Fi, mesh systems, cabling, switches and router setup.</p>
 <h2>Cybersecurity</h2><p>Malware removal, backups, account security, and staff training.</p>
 <h2>Web Development</h2><p>Small business websites, Joomla sites, hosting and maintenance.</p>
-<h2>Software Development, AI &amp; Automation</h2><p>Custom software, practical AI tools, and home or industrial automation.</p>
+<h2>PLC, HMI &amp; SCADA Programming</h2><p>PLC and HMI programming, SCADA systems and secure industrial networks: new machines, program changes, troubleshooting, upgrades and remote access done safely.</p>
+<h2>Custom Programming, AI &amp; Automation</h2><p>Custom software and integrations, practical AI tools, and home or building automation.</p>
 <h2>Network Security Device</h2><p>A managed firewall appliance that protects every device on your network.</p>
 HTML, $now, $authorId, $hideInfo);
 
@@ -200,29 +206,104 @@ $after   = pt_menu($db, 'Request Support', 'request-support', 'index.php?option=
 $after   = pt_menu($db, 'My Tickets', 'my-tickets', 'index.php?option=com_ptickets&view=tickets', $componentId('com_ptickets'), false, [], $after);
 pt_menu($db, 'Customer Login', 'login', 'index.php?option=com_users&view=login', $componentId('com_users'), false, [], $after);
 
-// ---------- Modules ----------
-$db->setQuery("UPDATE #__modules SET position='menu', showtitle=0, params=JSON_SET(params,'$.layout','cassiopeia:collapse-metismenu')
-    WHERE module='mod_menu' AND client_id=0 AND JSON_UNQUOTE(JSON_EXTRACT(params,'$.menutype'))='mainmenu'")->execute();
-$db->setQuery("UPDATE #__modules SET published=0 WHERE module IN ('mod_login','mod_breadcrumbs') AND client_id=0 AND position IN ('sidebar-right','sidebar-left')")->execute();
-$say('main menu -> header (collapsible on phones); sidebar login box hidden');
+// ---------- Settings: first run only (so a re-run never undoes your changes) ----------
+if ($firstRun) {
+    $db->setQuery("UPDATE #__modules SET position='menu', showtitle=0, params=JSON_SET(params,'$.layout','cassiopeia:collapse-metismenu')
+        WHERE module='mod_menu' AND client_id=0 AND JSON_UNQUOTE(JSON_EXTRACT(params,'$.menutype'))='mainmenu'")->execute();
+    $db->setQuery("UPDATE #__modules SET published=0 WHERE module IN ('mod_login','mod_breadcrumbs') AND client_id=0 AND position IN ('sidebar-right','sidebar-left')")->execute();
+    $say('main menu -> header (collapsible on phones); sidebar login box hidden');
 
-// ---------- Template: default + contact details ----------
+    $db->setQuery("UPDATE #__template_styles SET home='0' WHERE client_id=0")->execute();
+    $db->setQuery("UPDATE #__template_styles SET home='1' WHERE client_id=0 AND template='pamperins'")->execute();
+    $say('template: Pamperins is the default');
+
+    $activation = $local ? '0' : '1';   // 1 = customer confirms their e-mail address
+    $db->setQuery("UPDATE #__extensions SET params=JSON_SET(params,'$.allowUserRegistration','1','$.useractivation','$activation') WHERE element='com_users' AND type='component'")->execute();
+    $say('customer sign-up on' . ($local ? ' (no activation e-mail: LOCAL)' : ' (customers confirm their e-mail)'));
+}
+
+// Template contact details: on the first run, or when --phone / --email are given. Old link defaults are repaired.
 $params = json_decode((string) $q("SELECT params FROM #__template_styles WHERE template='pamperins' AND client_id=0 ORDER BY id LIMIT 1"), true) ?: [];
-$params = array_merge($params, ['phone' => $phone, 'email' => $email, 'helpUrl' => 'request-support', 'remoteUrl' => 'remote-support']);
-$styleQ = $db->getQuery(true)->update('#__template_styles')->set('params = ' . $db->quote(json_encode($params)))
-    ->where("template='pamperins'")->where('client_id=0');
-$db->setQuery($styleQ)->execute();
-$db->setQuery("UPDATE #__template_styles SET home='0' WHERE client_id=0")->execute();
-$db->setQuery("UPDATE #__template_styles SET home='1' WHERE client_id=0 AND template='pamperins'")->execute();
-$say("template: Pamperins is the default; footer phone $phone, email $email");
+$before = $params;
 
-// ---------- Accounts + tickets ----------
-$activation = $local ? '0' : '1';   // 1 = customer confirms their e-mail address
-$db->setQuery("UPDATE #__extensions SET params=JSON_SET(params,'$.allowUserRegistration','1','$.useractivation','$activation') WHERE element='com_users' AND type='component'")->execute();
+if ($firstRun || $phoneGiven) {
+    $params['phone'] = $phone;
+}
+
+if ($firstRun || $emailGiven) {
+    $params['email'] = $email;
+}
+
+if (\in_array($params['helpUrl'] ?? '', ['', 'get-help'], true)) {
+    $params['helpUrl'] = 'request-support';
+}
+
+if (\in_array($params['remoteUrl'] ?? '', ['', '#remote-support'], true)) {
+    $params['remoteUrl'] = 'remote-support';
+}
+
+if ($params !== $before) {
+    $db->setQuery($db->getQuery(true)->update('#__template_styles')->set('params = ' . $db->quote(json_encode($params)))
+        ->where("template='pamperins'")->where('client_id=0'))->execute();
+    $say('template settings: footer phone ' . ($params['phone'] ?? '-') . ', e-mail ' . ($params['email'] ?? '-'));
+}
+
 $tParams = json_decode((string) $q("SELECT params FROM #__extensions WHERE element='com_ptickets'"), true) ?: [];
+$tBefore = $tParams;
 $tParams += ['notify_email' => $email, 'ref_prefix' => 'PT-', 'remote_url' => 'https://support.pamperins.com/get-help', 'customer_email' => '1'];
-$db->setQuery($db->getQuery(true)->update('#__extensions')->set('params = ' . $db->quote(json_encode($tParams)))->where("element='com_ptickets'"))->execute();
-$say('customer sign-up on' . ($local ? ' (no activation e-mail: LOCAL)' : ' (customers confirm their e-mail)') . "; ticket alerts -> {$tParams['notify_email']}");
+
+if ($tParams !== $tBefore) {
+    $db->setQuery($db->getQuery(true)->update('#__extensions')->set('params = ' . $db->quote(json_encode($tParams)))->where("element='com_ptickets'"))->execute();
+    $say("ticket alerts -> {$tParams['notify_email']}");
+}
+
+// ---------- Content updates for existing sites (add only what's missing) ----------
+// Home page service cards (module in position pt-services)
+$plcCard = <<<'HTML'
+<div class="pt-card pt-card--plc">
+<h3>PLC, HMI &amp; SCADA</h3>
+<p>PLC and HMI programming, SCADA systems and secure industrial networks, plus custom programming for your equipment.</p>
+<p><a class="pt-card__link" href="request-support?type=plc">Start a project</a></p>
+</div>
+HTML;
+$cardLinks = [
+    'Plan my network'      => 'request-support?type=network',
+    'Secure my devices'    => 'request-support?type=network',
+    'Start a website'      => 'request-support?type=website',
+    'Ask about the device' => 'request-support?type=network',
+];
+
+foreach ($db->setQuery("SELECT id, content FROM #__modules WHERE position='pt-services' AND client_id=0")->loadObjectList() as $mod) {
+    $html = $mod->content;
+
+    foreach ($cardLinks as $text => $href) {          // old installs linked these cards to a page that doesn't exist
+        $html = str_replace('href="get-help">' . $text . '<', 'href="' . $href . '">' . $text . '<', $html);
+    }
+
+    if (!str_contains($html, 'pt-card--plc') && ($pos = strrpos($html, '</div>')) !== false) {
+        $html = substr($html, 0, $pos) . $plcCard . "\n" . substr($html, $pos);   // last </div> closes .pt-cards
+        $say('+ home page card: PLC, HMI & SCADA');
+    }
+
+    if ($html !== $mod->content) {
+        $row = (object) ['id' => (int) $mod->id, 'content' => $html];
+        $db->updateObject('#__modules', $row, 'id');
+        $say('home page service cards updated (module ' . (int) $mod->id . ')');
+    }
+}
+
+// Services page: add the PLC section if it isn't mentioned yet
+$svc = $db->setQuery("SELECT id, introtext FROM #__content WHERE alias='services'")->loadObject();
+
+if ($svc && stripos($svc->introtext, 'PLC') === false) {
+    $section = '<h2>PLC, HMI &amp; SCADA Programming</h2><p>PLC and HMI programming, SCADA systems and secure industrial networks: '
+        . 'new machines, program changes, troubleshooting, upgrades and remote access done safely.</p>';
+    $at   = stripos($svc->introtext, '<h2>Network Security Device');
+    $text = $at === false ? $svc->introtext . "\n" . $section : substr($svc->introtext, 0, $at) . $section . "\n" . substr($svc->introtext, $at);
+    $row = (object) ['id' => (int) $svc->id, 'introtext' => $text];
+    $db->updateObject('#__content', $row, 'id');
+    $say('+ Services page section: PLC, HMI & SCADA Programming');
+}
 
 // ---------- Friendly URLs ----------
 if (!is_file(JPATH_ROOT . '/.htaccess') && is_file(JPATH_ROOT . '/htaccess.txt')) {
