@@ -45,7 +45,8 @@ See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** E
     wording in `site/language/en-GB/com_ptickets.ini`
   - To add a request type: add it to `SupportTypes::TYPES`, create `type_<key>.xml`, add its
     `COM_PTICKETS_TYPE_<KEY>` strings, add it to `admin/forms/filter_tickets.xml`, and add a `.pt-card--t-<key>` icon in user.css
-- `content/remote-support.html`: Remote Support page, pasted into a Joomla article on the live site
+- `content/remote-support.html`: the "Get Help Now" page (alias `remote-support`, marker `pt-remote-support v2`). `setup-site.php`
+  installs it on fresh sites and replaces the old 1.0 text on existing sites, but never a page edited by hand.
 - `docs/DEPLOY.md`: live-server runbook (Part A test copy at a subdomain, steps 1–7 install, Part B go live).
 - `docs/NEW-SERVER.md`: fresh Ubuntu 24.04 server → Joomla 6.2 + this site at a subdomain, then switching pamperins.com over.
 - `deploy/new-server.sh`: the one-shot installer used by NEW-SERVER.md (Apache, PHP 8.3, MariaDB, verified Joomla download,
