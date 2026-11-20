@@ -238,6 +238,11 @@ if (\in_array($params['helpUrl'] ?? '', ['', 'get-help', 'request-support'], tru
     $params['helpUrl'] = 'remote-support';
 }
 
+// Customer Login: the client portal on the support server (CRM) replaces Joomla's own login page (old default)
+if (\in_array($params['loginUrl'] ?? '', ['', 'index.php?option=com_users&view=login'], true)) {
+    $params['loginUrl'] = 'https://support.pamperins.com/portal';
+}
+
 if (\in_array($params['remoteUrl'] ?? '', ['', '#remote-support'], true)) {
     $params['remoteUrl'] = 'remote-support';
 }

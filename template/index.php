@@ -166,7 +166,7 @@ $hours    = trim((string) $params->get('hours', ''));
                 <a class="btn pt-btn pt-btn--accent" href="<?php echo $pt_href($params->get('helpUrl', 'remote-support')); ?>">
                     <?php echo $e($params->get('helpLabel', 'Get Help Now')); ?>
                 </a>
-                <a class="btn pt-btn pt-btn--ghost" href="<?php echo $pt_href($params->get('loginUrl', 'index.php?option=com_users&view=login')); ?>">
+                <a class="btn pt-btn pt-btn--ghost" href="<?php echo $pt_href($params->get('loginUrl', 'https://support.pamperins.com/portal')); ?>">
                     <?php echo $e($params->get('loginLabel', 'Customer Login')); ?>
                 </a>
             </div>
