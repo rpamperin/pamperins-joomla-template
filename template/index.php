@@ -36,7 +36,10 @@ $sitename  = htmlspecialchars($app->get('sitename'), ENT_QUOTES, 'UTF-8');
 $menu      = $app->getMenu()->getActive();
 $pageclass = $menu !== null ? $menu->getParams()->get('pageclass_sfx', '') : '';
 $default   = $app->getMenu()->getDefault($this->language);
-$isHome    = $menu !== null && $default !== null && (int) $menu->id === (int) $default->id;
+// Joomla falls back to the home menu item for pages without their own menu item (e.g. /component/users/registration),
+// so also check that this request really is the home item's page.
+$isHome    = $menu !== null && $default !== null && (int) $menu->id === (int) $default->id
+    && $option === ($default->query['option'] ?? '') && $view === ($default->query['view'] ?? '');
 
 /**
  * Turn a URL from the template settings into a usable href.

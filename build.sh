@@ -2,6 +2,7 @@
 # Builds the installable Joomla packages:
 #   pamperins-template.zip         the site template      (template/)
 #   pamperins-support-tickets.zip  the support tickets    (extensions/com_ptickets/)
+#   pamperins-sso-plugin.zip       single sign-on with the CRM (extensions/plg_system_ptsso/)
 # Each zip has its manifest XML at the root (no nested folder).
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -24,3 +25,4 @@ package() {
 
 package template templateDetails.xml pamperins-template.zip
 package extensions/com_ptickets ptickets.xml pamperins-support-tickets.zip
+package extensions/plg_system_ptsso ptsso.xml pamperins-sso-plugin.zip

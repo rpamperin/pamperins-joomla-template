@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="system" method="upgrade">
+	<name>plg_system_ptsso</name>
+	<version>0.9.0</version>
+	<creationDate>2026-11</creationDate>
+	<author>Pamperins Tech</author>
+	<authorUrl>https://pamperins.com</authorUrl>
+	<copyright>(C) 2026 Pamperins Tech</copyright>
+	<license>GNU General Public License version 2 or later</license>
+	<description>PLG_SYSTEM_PTSSO_XML_DESCRIPTION</description>
+	<namespace path="src">Pamperins\Plugin\System\Ptsso</namespace>
+	<files>
+		<folder plugin="ptsso">services</folder>
+		<folder>src</folder>
+	</files>
+	<media destination="plg_system_ptsso" folder="media">
+		<folder>js</folder>
+	</media>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/plg_system_ptsso.ini</language>
+		<language tag="en-GB">en-GB/plg_system_ptsso.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="issuer" type="url" label="PLG_SYSTEM_PTSSO_ISSUER" description="PLG_SYSTEM_PTSSO_ISSUER_DESC" default="https://support.pamperins.com" filter="url" />
+				<field name="client_id" type="text" label="PLG_SYSTEM_PTSSO_CLIENT_ID" default="pamperins-website" filter="string" />
+				<field name="client_secret" type="password" label="PLG_SYSTEM_PTSSO_CLIENT_SECRET" description="PLG_SYSTEM_PTSSO_CLIENT_SECRET_DESC" filter="raw" autocomplete="new-password" />
+				<field name="button_label" type="text" label="PLG_SYSTEM_PTSSO_BUTTON_LABEL" default="Log in with Pamperins" filter="string" />
+				<field name="enable_site" type="radio" label="PLG_SYSTEM_PTSSO_ENABLE_SITE" default="1" layout="joomla.form.field.radio.switcher">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="enable_admin" type="radio" label="PLG_SYSTEM_PTSSO_ENABLE_ADMIN" default="1" layout="joomla.form.field.radio.switcher">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+			</fieldset>
+			<fieldset name="accounts" label="PLG_SYSTEM_PTSSO_FIELDSET_ACCOUNTS">
+				<field name="auto_create" type="radio" label="PLG_SYSTEM_PTSSO_AUTO_CREATE" default="1" layout="joomla.form.field.radio.switcher">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="link_by_email" type="radio" label="PLG_SYSTEM_PTSSO_LINK_EMAIL" description="PLG_SYSTEM_PTSSO_LINK_EMAIL_DESC" default="1" layout="joomla.form.field.radio.switcher">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="roles_claim" type="text" label="PLG_SYSTEM_PTSSO_ROLES_CLAIM" default="roles" filter="cmd" />
+				<field name="role_admin" type="text" label="PLG_SYSTEM_PTSSO_ROLE_ADMIN" default="admin" filter="string" />
+				<field name="group_admin" type="usergrouplist" label="PLG_SYSTEM_PTSSO_GROUP_ADMIN" default="7" />
+				<field name="role_staff" type="text" label="PLG_SYSTEM_PTSSO_ROLE_STAFF" default="staff" filter="string" />
+				<field name="group_staff" type="usergrouplist" label="PLG_SYSTEM_PTSSO_GROUP_STAFF" default="6" />
+				<field name="group_client" type="usergrouplist" label="PLG_SYSTEM_PTSSO_GROUP_CLIENT" description="PLG_SYSTEM_PTSSO_GROUP_CLIENT_DESC" default="2" />
+			</fieldset>
+			<fieldset name="advanced">
+				<field name="discovery_url" type="url" label="PLG_SYSTEM_PTSSO_DISCOVERY" description="PLG_SYSTEM_PTSSO_DISCOVERY_DESC" default="" filter="url" />
+				<field name="allow_http" type="radio" label="PLG_SYSTEM_PTSSO_ALLOW_HTTP" description="PLG_SYSTEM_PTSSO_ALLOW_HTTP_DESC" default="0" layout="joomla.form.field.radio.switcher">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
