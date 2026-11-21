@@ -19,7 +19,11 @@ $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('keepalive')
     ->useScript('form.validate');
 
-$heading = $this->params->get('show_page_heading') ? $this->params->get('page_heading') : Text::_('TPL_PAMPERINS_RESET_TITLE');
+// Use the menu item's heading only when the menu item is this page; otherwise it is borrowed from Home.
+$ptActive  = \Joomla\CMS\Factory::getApplication()->getMenu()->getActive();
+$ptOwnItem = $ptActive && ($ptActive->query['option'] ?? '') === 'com_users' && ($ptActive->query['view'] ?? '') === 'reset';
+$heading   = $ptOwnItem && $this->params->get('show_page_heading') && $this->params->get('page_heading')
+    ? $this->params->get('page_heading') : Text::_('TPL_PAMPERINS_RESET_TITLE');
 ?>
 <div class="com-users-reset reset pt-auth">
     <div class="pt-auth__card">
