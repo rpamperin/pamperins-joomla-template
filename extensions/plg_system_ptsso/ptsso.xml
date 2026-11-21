@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" group="system" method="upgrade">
 	<name>plg_system_ptsso</name>
-	<version>0.9.0</version>
+	<version>0.9.1</version>
 	<creationDate>2026-11</creationDate>
 	<author>Pamperins Tech</author>
 	<authorUrl>https://pamperins.com</authorUrl>
@@ -46,10 +46,10 @@
 					<option value="1">JYES</option>
 				</field>
 				<field name="roles_claim" type="text" label="PLG_SYSTEM_PTSSO_ROLES_CLAIM" default="roles" filter="cmd" />
-				<field name="role_admin" type="text" label="PLG_SYSTEM_PTSSO_ROLE_ADMIN" default="admin" filter="string" />
+				<field name="role_admin" type="text" label="PLG_SYSTEM_PTSSO_ROLE_ADMIN" description="PLG_SYSTEM_PTSSO_ROLE_ADMIN_DESC" default="admin" filter="string" />
 				<field name="group_admin" type="usergrouplist" label="PLG_SYSTEM_PTSSO_GROUP_ADMIN" default="7" />
-				<field name="role_staff" type="text" label="PLG_SYSTEM_PTSSO_ROLE_STAFF" default="staff" filter="string" />
-				<field name="group_staff" type="usergrouplist" label="PLG_SYSTEM_PTSSO_GROUP_STAFF" default="6" />
+				<field name="role_manager" type="text" label="PLG_SYSTEM_PTSSO_ROLE_MANAGER" description="PLG_SYSTEM_PTSSO_ROLE_MANAGER_DESC" default="" filter="string" />
+				<field name="group_manager" type="usergrouplist" label="PLG_SYSTEM_PTSSO_GROUP_MANAGER" default="6" />
 				<field name="group_client" type="usergrouplist" label="PLG_SYSTEM_PTSSO_GROUP_CLIENT" description="PLG_SYSTEM_PTSSO_GROUP_CLIENT_DESC" default="2" />
 			</fieldset>
 			<fieldset name="advanced">

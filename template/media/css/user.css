@@ -1054,3 +1054,17 @@ a.pt-typecard:focus-visible { outline: 3px solid var(--pt-blue); outline-offset:
 .pamperins .pt-note { font-size: 1.05rem; }
 .pamperins .pt-checklist--light li { color: var(--pt-ink); }
 .pamperins .pt-checklist--light { margin-bottom: 1.5rem; }
+
+/* ---------- Single sign-on: "Link my support account" card (plg_system_ptsso, account pages) ---------- */
+.pt-sso-link {
+  max-width: 28rem;
+  margin: 1.5rem auto 0;
+  padding: 1.25rem 1.5rem;
+  background: var(--pt-blue-soft);
+  border: 1px solid var(--pt-line);
+  border-radius: var(--pt-radius);
+  color: var(--pt-ink);
+}
+.pt-sso-link h2 { font-size: 1.15rem; margin: 0 0 .4rem; }
+.pt-sso-link p:last-child { margin-bottom: 0; }
+.pt-sso-link--done { background: var(--pt-bg-alt); color: var(--pt-muted); text-align: center; }

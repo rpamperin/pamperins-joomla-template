@@ -13,11 +13,14 @@ $csec  = 'test-secret-123';
 $allow = array_filter(array_map('trim', explode(',', getenv('IDP_REDIRECTS') ?: '')));
 $store = sys_get_temp_dir() . '/idp-state.json';
 $users = [
-    'alice' => ['sub' => 'u-1001', 'name' => 'Alice Client', 'email' => 'alice@example.com', 'email_verified' => true, 'roles' => ['client']],
-    'bob'   => ['sub' => 'u-1002', 'name' => 'Bob Staff', 'email' => 'bob@example.com', 'email_verified' => true, 'roles' => ['staff']],
-    'carol' => ['sub' => 'u-1003', 'name' => 'Carol Admin', 'email' => 'carol@example.com', 'email_verified' => true, 'roles' => ['admin']],
-    'dave'  => ['sub' => 'u-1004', 'name' => 'Dave Existing', 'email' => 'customer@example.com', 'email_verified' => true, 'roles' => ['client']],
-    'eve'   => ['sub' => 'u-1005', 'name' => 'Eve Unverified', 'email' => 'other@example.com', 'email_verified' => false, 'roles' => ['client']],
+    // Same claim shapes as rsup: sub "client:<uuid>" / "staff:<uuid>"; roles client | staff+tech | staff+office | staff+admin.
+    // Client e-mails are NOT verified in rsup (no confirmation e-mail); staff e-mails are typed in by an admin, so verified.
+    'alice' => ['sub' => 'client:0b6f1d2e-0000-4000-8000-000000001001', 'name' => 'Alice Client', 'email' => 'alice@example.com', 'email_verified' => false, 'roles' => ['client']],
+    'bob'   => ['sub' => 'staff:0b6f1d2e-0000-4000-8000-000000002002', 'name' => 'Bob Tech', 'email' => 'bob@example.com', 'email_verified' => true, 'roles' => ['staff', 'tech']],
+    'carol' => ['sub' => 'staff:0b6f1d2e-0000-4000-8000-000000002003', 'name' => 'Carol Admin', 'email' => 'carol@example.com', 'email_verified' => true, 'roles' => ['staff', 'admin']],
+    'olga'  => ['sub' => 'staff:0b6f1d2e-0000-4000-8000-000000002006', 'name' => 'Olga Office', 'email' => 'olga@example.com', 'email_verified' => true, 'roles' => ['staff', 'office']],
+    'dave'  => ['sub' => 'client:0b6f1d2e-0000-4000-8000-000000001004', 'name' => 'Dave Existing', 'email' => 'customer@example.com', 'email_verified' => false, 'roles' => ['client']],
+    'eve'   => ['sub' => 'client:0b6f1d2e-0000-4000-8000-000000001005', 'name' => 'Eve Other', 'email' => 'other@example.com', 'email_verified' => false, 'roles' => ['client']],
 ];
 $load = fn () => is_file($store) ? (json_decode(file_get_contents($store), true) ?: []) : [];
 $save = fn ($s) => file_put_contents($store, json_encode($s));

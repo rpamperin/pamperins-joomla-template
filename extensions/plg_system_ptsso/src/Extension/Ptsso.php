@@ -15,6 +15,11 @@
  *      endpoint, because the token comes straight from it, not through the browser.)
  *   5. Find or create the website account, sync groups from the CRM role, and log in.
  *
+ * Linking: a customer who already has a website account (and whose CRM e-mail isn't verified, so it can't be
+ * linked automatically) logs in with their password and clicks "Link my support account" on their account page:
+ * index.php?ptsso=link&<form token>=1 runs the same flow with prompt=login and stores the CRM subject on the
+ * account that is logged in.
+ *
  * The normal username/password login is untouched and keeps working as a fallback.
  *
  * Login code adapted from Joomla's own plg_system_webauthn (GPL).
@@ -35,6 +40,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -61,6 +67,7 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
         return [
             'onUserLoginButtons' => 'onUserLoginButtons',
             'onAfterRoute'       => 'onAfterRoute',
+            'onAfterDispatch'    => 'onAfterDispatch',
         ];
     }
 
@@ -111,7 +118,7 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
         $input = $app->getInput();
         $step  = $input->getCmd('ptsso', '');
 
-        if ($step !== 'login' && $step !== 'callback') {
+        if (!\in_array($step, ['login', 'callback', 'link'], true)) {
             return;
         }
 
@@ -136,10 +143,57 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
             return;
         }
 
+        if ($step === 'link') {
+            // Only for someone already logged in to the website, and only from our own button (form token)
+            if (!$app->isClient('site') || $app->getIdentity()->guest || !Session::checkToken('get')) {
+                $this->fail('PLG_SYSTEM_PTSSO_ERR_STATE');
+            }
+
+            $this->startLogin($input->getBase64('return', ''), (int) $app->getIdentity()->id);
+
+            return;
+        }
+
         $this->startLogin($input->getBase64('return', ''));
     }
 
-    private function startLogin(string $returnB64): void
+    // ------------------------------------------------------------------ "Link my support account" card
+
+    /** On the account pages of a logged-in customer, show whether the account is linked, with a button to link it. */
+    public function onAfterDispatch(Event $event): void
+    {
+        $app = $this->getApplication();
+
+        if (!$app instanceof CMSApplication || !$app->isClient('site') || $app->getDocument()->getType() !== 'html') {
+            return;
+        }
+
+        $user  = $app->getIdentity();
+        $input = $app->getInput();
+
+        if (!$user || $user->guest || $input->getCmd('option') !== 'com_users'
+            || !\in_array($input->getCmd('view', 'login'), ['login', 'profile'], true) || !$this->enabledHere()) {
+            return;
+        }
+
+        $this->loadLanguage();
+        $doc = $app->getDocument();
+
+        if ($this->linkedSub((int) $user->id) !== '') {
+            $html = '<div class="pt-sso-link pt-sso-link--done"><p>' . Text::_('PLG_SYSTEM_PTSSO_LINKED') . '</p></div>';
+        } else {
+            $return = Uri::getInstance()->toString(['path', 'query']);
+            $url    = Uri::base(true) . '/index.php?ptsso=link&' . Session::getFormToken() . '=1&return=' . rawurlencode(base64_encode($return));
+            $html   = '<div class="pt-sso-link"><h2>' . Text::_('PLG_SYSTEM_PTSSO_LINK_TITLE') . '</h2>'
+                . '<p>' . Text::_('PLG_SYSTEM_PTSSO_LINK_TEXT') . '</p>'
+                . '<p><a class="btn btn-primary pt-btn" href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '">'
+                . Text::_('PLG_SYSTEM_PTSSO_LINK_BUTTON') . '</a></p></div>';
+        }
+
+        $doc->setBuffer($doc->getBuffer('component') . $html, ['type' => 'component', 'name' => null, 'title' => null]);
+    }
+
+    private function startLogin(string $returnB64, int $linkUserId = 0): void
     {
         $config = $this->discovery();
         $state  = bin2hex(random_bytes(16));
@@ -153,6 +207,7 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
             'verify' => $verify,
             'return' => ($return && Uri::isInternal($return)) ? $return : $this->defaultReturn(),
             'time'   => time(),
+            'link'   => $linkUserId,
         ]);
 
         $query = http_build_query([
@@ -164,7 +219,7 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
             'nonce'                 => $nonce,
             'code_challenge'        => rtrim(strtr(base64_encode(hash('sha256', $verify, true)), '+/', '-_'), '='),
             'code_challenge_method' => 'S256',
-        ]);
+        ] + ($linkUserId ? ['prompt' => 'login'] : []));   // linking: make the person sign in to the CRM now
 
         $sep = str_contains($config['authorization_endpoint'], '?') ? '&' : '?';
         $this->getApplication()->redirect($config['authorization_endpoint'] . $sep . $query);
@@ -208,6 +263,10 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
             $claims = array_merge($claims, $info);
         }
 
+        if (!empty($saved['link'])) {
+            $this->finishLink((int) $saved['link'], $claims, $saved['return'] ?: $this->defaultReturn());
+        }
+
         $userId = $this->findOrCreateUser($claims);
         $user   = $this->users()->loadUserById($userId);
 
@@ -222,6 +281,32 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
         $this->loginUser($user);
         $app->enqueueMessage(Text::sprintf('PLG_SYSTEM_PTSSO_WELCOME', htmlspecialchars($user->name, ENT_QUOTES, 'UTF-8')));
         $app->redirect($saved['return'] ?: $this->defaultReturn());
+    }
+
+    /** Store the CRM subject on the website account that started the link (still logged in, same session). */
+    private function finishLink(int $userId, array $claims, string $return): never
+    {
+        $app = $this->getApplication();
+
+        if ((int) $app->getIdentity()->id !== $userId) {
+            $this->fail('PLG_SYSTEM_PTSSO_ERR_STATE', 'link: logged-in user changed during the flow');
+        }
+
+        $sub   = (string) $claims['sub'];
+        $owner = $this->userIdForSub($sub);
+
+        if ($owner && $owner !== $userId) {
+            $this->fail('PLG_SYSTEM_PTSSO_ERR_LINK_TAKEN', "link: sub $sub already belongs to account $owner");
+        }
+
+        if (!$owner) {
+            $this->saveSub($userId, $sub);
+            $this->syncUser($userId, $claims);
+            Log::add("SSO: account $userId linked to sub $sub by the logged-in user", Log::INFO, 'ptsso');
+        }
+
+        $app->enqueueMessage(Text::_('PLG_SYSTEM_PTSSO_LINK_DONE'));
+        $app->redirect($return);
     }
 
     // ------------------------------------------------------------------ token checks
@@ -263,19 +348,9 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
 
     private function findOrCreateUser(array $c): int
     {
-        $db  = $this->getDatabase();
-        $sub = (string) $c['sub'];
-
-        $key   = self::PROFILE_KEY;
-        $value = json_encode($sub);
-        $q     = $db->getQuery(true)
-            ->select($db->quoteName('user_id'))
-            ->from($db->quoteName('#__user_profiles'))
-            ->where($db->quoteName('profile_key') . ' = :k')
-            ->where($db->quoteName('profile_value') . ' = :v')
-            ->bind(':k', $key)
-            ->bind(':v', $value);
-        $userId = (int) $db->setQuery($q)->loadResult();
+        $db     = $this->getDatabase();
+        $sub    = (string) $c['sub'];
+        $userId = $this->userIdForSub($sub);
 
         $email    = trim((string) ($c['email'] ?? ''));
         $verified = filter_var($c['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -311,22 +386,29 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
                 $this->fail('PLG_SYSTEM_PTSSO_ERR_EMAIL_IN_USE', "e-mail $email already used by another account and not verified at the provider");
             }
 
-            $user = new User();
-            $data = [
-                'name'      => trim((string) ($c['name'] ?? '')) ?: strstr($email, '@', true),
-                'username'  => $this->uniqueUsername((string) ($c['preferred_username'] ?? strstr($email, '@', true))),
-                'email'     => $email,
-                'password'  => UserHelper::genRandomPassword(32),
-                'block'     => 0,
-                'activation' => '',
-                'groups'    => [(int) $this->params->get('group_client', 2)],
+            // Saved through the users table, not User::save(): from the admin, Joomla's "new account" e-mail would
+            // otherwise send the person this random password. They never need it: they log in with Pamperins
+            // (and can still set a password later with "Forgot your password?").
+            $user  = new User();
+            $table = $user->getTable();
+            $data  = [
+                'name'         => trim((string) ($c['name'] ?? '')) ?: strstr($email, '@', true),
+                'username'     => $this->uniqueUsername((string) ($c['preferred_username'] ?? strstr($email, '@', true))),
+                'email'        => $email,
+                'password'     => UserHelper::hashPassword(UserHelper::genRandomPassword(32)),
+                'block'        => 0,
+                'sendEmail'    => 0,
+                'activation'   => '',
+                'registerDate' => \Joomla\CMS\Factory::getDate()->toSql(),
+                'params'       => '{}',
+                'groups'       => [(int) $this->params->get('group_client', 2)],
             ];
-            $user->bind($data);
 
-            if (!$user->save()) {
-                $this->fail('PLG_SYSTEM_PTSSO_ERR_TOKEN', 'could not create account: ' . $user->getError());
+            if (!$table->bind($data) || !$table->check() || !$table->store()) {
+                $this->fail('PLG_SYSTEM_PTSSO_ERR_TOKEN', 'could not create account: ' . $table->getError());
             }
 
+            $user = $this->users()->loadUserById((int) $table->id);
             $userId = (int) $user->id;
             $this->saveSub($userId, $sub);
             Log::add("SSO: created account $userId for sub $sub", Log::INFO, 'ptsso');
@@ -342,10 +424,18 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
     {
         $user    = $this->users()->loadUserById($userId);
         $roles   = array_map('strval', (array) ($c[$this->params->get('roles_claim', 'roles')] ?? []));
-        $managed = [
-            (int) $this->params->get('group_admin', 7) => \in_array((string) $this->params->get('role_admin', 'admin'), $roles, true),
-            (int) $this->params->get('group_staff', 6) => \in_array((string) $this->params->get('role_staff', 'staff'), $roles, true),
-        ];
+        $managed = [];
+
+        // Each CRM role -> website group. For linked accounts these groups always follow the CRM: a role left empty
+        // means nobody gets that group, so clearing the setting also takes the access away at the next login.
+        foreach ([['role_admin', 'admin', 'group_admin', 7], ['role_manager', '', 'group_manager', 6]] as [$rk, $rd, $gk, $gd]) {
+            $role = trim((string) $this->params->get($rk, $rd));
+            $gid  = (int) $this->params->get($gk, $gd);
+
+            if ($gid) {
+                $managed[$gid] = ($managed[$gid] ?? false) || ($role !== '' && \in_array($role, $roles, true));
+            }
+        }
         $groups  = array_map('intval', $user->groups);
         $groups[] = (int) $this->params->get('group_client', 2);
 
@@ -381,6 +471,37 @@ final class Ptsso extends CMSPlugin implements SubscriberInterface
 
             Access::clearStatics();
         }
+    }
+
+    private function userIdForSub(string $sub): int
+    {
+        $db    = $this->getDatabase();
+        $key   = self::PROFILE_KEY;
+        $value = json_encode($sub);
+        $q     = $db->getQuery(true)
+            ->select($db->quoteName('user_id'))
+            ->from($db->quoteName('#__user_profiles'))
+            ->where($db->quoteName('profile_key') . ' = :k')
+            ->where($db->quoteName('profile_value') . ' = :v')
+            ->bind(':k', $key)
+            ->bind(':v', $value);
+
+        return (int) $db->setQuery($q)->loadResult();
+    }
+
+    private function linkedSub(int $userId): string
+    {
+        $db  = $this->getDatabase();
+        $key = self::PROFILE_KEY;
+        $q   = $db->getQuery(true)
+            ->select($db->quoteName('profile_value'))
+            ->from($db->quoteName('#__user_profiles'))
+            ->where($db->quoteName('user_id') . ' = :u')
+            ->where($db->quoteName('profile_key') . ' = :k')
+            ->bind(':u', $userId, ParameterType::INTEGER)
+            ->bind(':k', $key);
+
+        return (string) json_decode((string) $db->setQuery($q)->loadResult());
     }
 
     private function saveSub(int $userId, string $sub): void

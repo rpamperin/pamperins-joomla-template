@@ -35,7 +35,7 @@ See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** E
   - `index.php`: page layout (header, hero, home sections, footer)
   - `script.php`: install script. On first install it copies the logo to `/images/logo.svg` and
     creates the "Home - Service Cards" / "Home - Why Pamperins Tech" modules (positions `pt-services`, `pt-why`).
-  - `html/com_users/`: login, registration and password reset overrides
+  - `html/com_users/`: login, logged-in account, profile, registration and password reset overrides
   - `media/images/logos/`: the five selectable logos (text already turned into shapes; see `branding/`)
 - `extensions/com_ptickets/` becomes `pamperins-support-tickets.zip` (manifest `ptickets.xml`).
   - `admin/src/Helper/SupportTypes.php`: the 8 request types, statuses and priorities
@@ -48,7 +48,9 @@ See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** E
 - `extensions/plg_system_ptsso/` becomes `pamperins-sso-plugin.zip` (manifest `ptsso.xml`): single sign-on with the CRM
   (support.pamperins.com) as the OpenID Connect provider. Adds a "Log in with Pamperins" button to the site and admin login
   forms; endpoints are `index.php?ptsso=login|callback` (and `administrator/index.php?ptsso=…`), handled in `onAfterRoute`.
-  Links accounts by the `ptsso.sub` row in `#__user_profiles`, else by verified e-mail; CRM roles map to Joomla groups.
+  Links accounts by the `ptsso.sub` row in `#__user_profiles`, else by verified e-mail (rsup client e-mails are not
+  verified, so existing customers use the "Link my support account" card on their account page, `?ptsso=link`).
+  CRM roles map to Joomla groups: `admin` → Administrator; the Manager role is empty by default (Ryan may set `office`).
   The client secret is typed into the plugin settings by the owner, never committed.
 - `dev/test-idp/router.php`: a fake OpenID provider for local testing only (`php -S 0.0.0.0:9000 router.php`). **Never deploy it.**
 - `content/remote-support.html`: the "Get Help Now" page (alias `remote-support`, marker `pt-remote-support v2`). `setup-site.php`
