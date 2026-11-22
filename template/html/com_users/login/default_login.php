@@ -32,6 +32,11 @@ $ptActive  = \Joomla\CMS\Factory::getApplication()->getMenu()->getActive();
 $ptOwnItem = $ptActive && ($ptActive->query['option'] ?? '') === 'com_users' && ($ptActive->query['view'] ?? '') === 'login';
 $heading   = $ptOwnItem && $this->params->get('show_page_heading') && $this->params->get('page_heading')
     ? $this->params->get('page_heading') : Text::_('TPL_PAMPERINS_LOGIN_TITLE');
+
+// Same for the browser tab title (respects Global Configuration "Site Name in Page Titles")
+if (!$ptOwnItem) {
+    $this->setDocumentTitle($heading);
+}
 ?>
 <div class="com-users-login login pt-auth">
     <div class="pt-auth__card">

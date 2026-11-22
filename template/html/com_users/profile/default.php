@@ -18,6 +18,11 @@ use Joomla\CMS\Router\Route;
 $ptActive  = \Joomla\CMS\Factory::getApplication()->getMenu()->getActive();
 $ptOwnItem = $ptActive && ($ptActive->query['option'] ?? '') === 'com_users' && ($ptActive->query['view'] ?? '') === 'profile';
 $heading   = $ptOwnItem && $this->params->get('page_heading') ? $this->params->get('page_heading') : Text::_('TPL_PAMPERINS_PROFILE_TITLE');
+
+// Same for the browser tab title (respects Global Configuration "Site Name in Page Titles")
+if (!$ptOwnItem) {
+    $this->setDocumentTitle($heading);
+}
 $showHead  = !$ptOwnItem || $this->params->get('show_page_heading');
 ?>
 <div class="com-users-profile profile">

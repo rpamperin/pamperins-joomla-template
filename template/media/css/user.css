@@ -780,7 +780,7 @@ body.pamperins {
 .pt-auth__card,
 .pamperins .com-users-reset-confirm,
 .pamperins .com-users-reset-complete,
-.pamperins .com-users-remind,
+.pamperins .com-users-remind:not(.pt-auth),
 .pamperins .com-users-logout {
   background: #fff;
   border: 1px solid var(--pt-line);
@@ -791,7 +791,7 @@ body.pamperins {
 
 .pamperins .com-users-reset-confirm,
 .pamperins .com-users-reset-complete,
-.pamperins .com-users-remind,
+.pamperins .com-users-remind:not(.pt-auth),
 .pamperins .com-users-logout {
   max-width: 28rem;
   margin: 0 auto;
