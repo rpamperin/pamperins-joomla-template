@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="content" method="upgrade">
+	<name>plg_content_ptpricing</name>
+	<version>1.0.0</version>
+	<creationDate>2026-11</creationDate>
+	<author>Pamperins Tech</author>
+	<authorUrl>https://pamperins.com</authorUrl>
+	<copyright>(C) 2026 Pamperins Tech</copyright>
+	<license>GNU General Public License version 2 or later</license>
+	<description>PLG_CONTENT_PTPRICING_XML_DESCRIPTION</description>
+	<namespace path="src">Pamperins\Plugin\Content\Ptpricing</namespace>
+	<files>
+		<folder plugin="ptpricing">services</folder>
+		<folder>src</folder>
+	</files>
+	<languages folder="language">
+		<language tag="en-GB">en-GB/plg_content_ptpricing.ini</language>
+		<language tag="en-GB">en-GB/plg_content_ptpricing.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="feed_url" type="url" label="PLG_CONTENT_PTPRICING_FEED_URL" description="PLG_CONTENT_PTPRICING_FEED_URL_DESC" default="https://support.pamperins.com/api/public/pricing" filter="url" />
+				<field name="refresh" type="number" label="PLG_CONTENT_PTPRICING_REFRESH" description="PLG_CONTENT_PTPRICING_REFRESH_DESC" default="10" min="1" max="1440" filter="integer" />
+				<field name="services_heading" type="text" label="PLG_CONTENT_PTPRICING_SERVICES_HEADING" default="One-time services" filter="string" />
+				<field name="show_updated" type="radio" label="PLG_CONTENT_PTPRICING_SHOW_UPDATED" default="1" layout="joomla.form.field.radio.switcher">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+			</fieldset>
+			<fieldset name="advanced">
+				<field name="allow_http" type="radio" label="PLG_CONTENT_PTPRICING_ALLOW_HTTP" description="PLG_CONTENT_PTPRICING_ALLOW_HTTP_DESC" default="0" layout="joomla.form.field.radio.switcher">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
