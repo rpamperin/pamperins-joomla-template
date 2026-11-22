@@ -338,6 +338,27 @@ if ($svc && stripos($svc->introtext, 'PLC') === false) {
     $say('+ Services page section: PLC, HMI & SCADA Programming');
 }
 
+// ---------- Articles must be in Joomla's workflow, or Content → Articles in the admin doesn't list them ----------
+// (Joomla's article list joins #__workflow_associations; articles created by this script before 1.2.2 had no row.)
+$stage = (int) $db->setQuery("SELECT s.id FROM #__workflow_stages s JOIN #__workflows w ON w.id = s.workflow_id
+    WHERE w.extension = 'com_content.article' AND w.default = 1 AND s.default = 1 AND s.published = 1")->loadResult();
+
+if ($stage) {
+    $missing = $db->setQuery("SELECT a.id FROM #__content a LEFT JOIN #__workflow_associations wa
+        ON wa.item_id = a.id AND wa.extension = 'com_content.article' WHERE wa.item_id IS NULL")->loadColumn();
+
+    foreach ($missing as $aid) {
+        $row = (object) ['item_id' => (int) $aid, 'stage_id' => $stage, 'extension' => 'com_content.article'];
+        $db->insertObject('#__workflow_associations', $row);
+    }
+
+    if ($missing) {
+        $say('articles now listed in the admin (Content → Articles): ' . \count($missing) . ' fixed');
+    }
+} else {
+    $say('NOTE: no default article workflow stage found; Content → Articles may not list the pages.');
+}
+
 // ---------- Friendly URLs ----------
 if (!is_file(JPATH_ROOT . '/.htaccess') && is_file(JPATH_ROOT . '/htaccess.txt')) {
     copy(JPATH_ROOT . '/htaccess.txt', JPATH_ROOT . '/.htaccess');
