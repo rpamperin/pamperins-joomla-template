@@ -610,7 +610,9 @@ body.pamperins {
    <table class="pt-pricing"> with the first column for feature names and three
    plan columns. The middle plan (3rd column) is highlighted automatically.
    For a table without a label column add class "pt-pricing pt-pricing--plans-only".
-   Or put class="featured" on any cells you want highlighted instead. */
+   Or put class="featured" on any cells you want highlighted instead.
+   Tables from the office price list (plg_content_ptpricing) have class "pt-pricing--live" and mark the featured plan's
+   cells with class="featured" themselves. */
 .pamperins main table.pt-pricing { text-align: center; }
 .pamperins main table.pt-pricing th, .pamperins main table.pt-pricing td { text-align: center; vertical-align: middle; }
 .pamperins main table.pt-pricing th:first-child, .pamperins main table.pt-pricing td:first-child { text-align: left; font-weight: 600; color: var(--pt-navy); }
@@ -619,7 +621,7 @@ body.pamperins {
 
 .pamperins main table.pt-pricing thead th { font-size: 1.05rem; padding-top: 1.1rem; padding-bottom: 1.1rem; }
 
-.pamperins main table.pt-pricing:not(.pt-pricing--plans-only) tr > :nth-child(3),
+.pamperins main table.pt-pricing:not(.pt-pricing--plans-only):not(.pt-pricing--live) tr > :nth-child(3),
 .pamperins main table.pt-pricing.pt-pricing--plans-only tr > :nth-child(2),
 .pamperins main table.pt-pricing .featured {
   background: var(--pt-blue-soft);
@@ -628,7 +630,7 @@ body.pamperins {
   color: var(--pt-navy);
 }
 
-.pamperins main table.pt-pricing:not(.pt-pricing--plans-only) thead tr > :nth-child(3),
+.pamperins main table.pt-pricing:not(.pt-pricing--plans-only):not(.pt-pricing--live) thead tr > :nth-child(3),
 .pamperins main table.pt-pricing.pt-pricing--plans-only thead tr > :nth-child(2),
 .pamperins main table.pt-pricing thead .featured {
   background: var(--pt-blue);
@@ -636,7 +638,7 @@ body.pamperins {
   position: relative;
 }
 
-.pamperins main table.pt-pricing:not(.pt-pricing--plans-only) thead tr > :nth-child(3)::before,
+.pamperins main table.pt-pricing:not(.pt-pricing--plans-only):not(.pt-pricing--live) thead tr > :nth-child(3)::before,
 .pamperins main table.pt-pricing.pt-pricing--plans-only thead tr > :nth-child(2)::before,
 .pamperins main table.pt-pricing thead .featured::before {
   content: "Most popular";
@@ -648,10 +650,15 @@ body.pamperins {
   margin-bottom: .15rem;
 }
 
-.pamperins main table.pt-pricing:not(.pt-pricing--plans-only) tbody tr:last-child > :nth-child(3),
+.pamperins main table.pt-pricing:not(.pt-pricing--plans-only):not(.pt-pricing--live) tbody tr:last-child > :nth-child(3),
 .pamperins main table.pt-pricing.pt-pricing--plans-only tbody tr:last-child > :nth-child(2) {
   box-shadow: inset 2px 0 0 var(--pt-blue), inset -2px 0 0 var(--pt-blue), inset 0 -2px 0 var(--pt-blue);
 }
+
+.pamperins main table.pt-pricing--live tbody tr:last-child > .featured {
+  box-shadow: inset 2px 0 0 var(--pt-blue), inset -2px 0 0 var(--pt-blue), inset 0 -2px 0 var(--pt-blue);
+}
+.pamperins .pt-pricing-updated { font-size: .85rem; color: var(--pt-muted); }
 
 .pamperins main table.pt-pricing .price { display: block; font-size: 1.6rem; font-weight: 800; color: var(--pt-navy); letter-spacing: -.02em; }
 .pamperins main table.pt-pricing .price small { font-size: .8rem; font-weight: 600; color: var(--pt-muted); }

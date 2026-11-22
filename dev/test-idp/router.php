@@ -28,6 +28,29 @@ $json = function ($data, int $code = 200) { http_response_code($code); header('C
 $b64  = fn ($s) => rtrim(strtr(base64_encode($s), '+/', '-_'), '=');
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
+// Sample office price list (docs/pricing-feed.md). Override with a file pricing.json next to this script's store.
+if ($path === '/api/public/pricing') {
+    $custom = sys_get_temp_dir() . '/ptidp-pricing.json';
+    if (is_file($custom)) { header('Content-Type: application/json'); echo file_get_contents($custom); exit; }
+    $json(['version' => 1, 'updated_at' => '2026-11-22T17:00:00Z', 'currency' => 'USD', 'price_note' => 'Prices plus sales tax. On-site visits outside Green Bay & Appleton may include travel.',
+        'plans' => [
+            ['id' => 'home', 'name' => 'Home', 'price_cents' => 3500, 'period' => 'month', 'summary' => 'For one household', 'features' => [
+                ['label' => 'Devices covered', 'value' => '3'], ['label' => 'Remote support', 'value' => 'Business hours'],
+                ['label' => 'On-site visits', 'value' => '10% off'], ['label' => 'Backup monitoring', 'value' => false]]],
+            ['id' => 'office', 'name' => 'Small Office', 'price_cents' => 8900, 'period' => 'month', 'featured' => true, 'summary' => 'Up to 10 people', 'features' => [
+                ['label' => 'Devices covered', 'value' => '12'], ['label' => 'Remote support', 'value' => 'Priority, same day'],
+                ['label' => 'On-site visits', 'value' => '1 per month'], ['label' => 'Backup monitoring', 'value' => true], ['label' => 'Network Security Device', 'value' => 'Included']]],
+            ['id' => 'business', 'name' => 'Business', 'price_cents' => 0, 'price_text' => 'Call for a quote', 'period' => 'month', 'summary' => '10+ people or PLC/SCADA', 'features' => [
+                ['label' => 'Devices covered', 'value' => 'Custom'], ['label' => 'Remote support', 'value' => '24/7'],
+                ['label' => 'On-site visits', 'value' => 'As needed'], ['label' => 'Backup monitoring', 'value' => true], ['label' => 'Network Security Device', 'value' => 'Included']]],
+        ],
+        'services' => [
+            ['id' => 'remote', 'name' => 'Remote session', 'price_cents' => 5000, 'unit' => 'session', 'notes' => 'First 30 minutes'],
+            ['id' => 'onsite', 'name' => 'On-site visit', 'price_cents' => 9500, 'unit' => 'hour', 'notes' => '1 hour minimum'],
+            ['id' => 'virus', 'name' => 'Virus / malware cleanup <b>', 'price_cents' => 12999, 'unit' => 'flat', 'notes' => 'Flat rate'],
+        ]]);
+}
+
 if ($path === '/.well-known/openid-configuration') {
     $json(['issuer' => $pub, 'authorization_endpoint' => "$pub/authorize", 'token_endpoint' => "$int/token",
         'userinfo_endpoint' => "$int/userinfo", 'jwks_uri' => "$int/jwks", 'response_types_supported' => ['code'],
