@@ -52,7 +52,10 @@ See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** E
   verified, so existing customers use the "Link my support account" card on their account page, `?ptsso=link`).
   CRM roles map to Joomla groups: `admin` → Administrator; the Manager role is empty by default (Ryan may set `office`).
   The client secret is typed into the plugin settings by the owner, never committed.
-- `dev/test-idp/router.php`: a fake OpenID provider for local testing only (`php -S 0.0.0.0:9000 router.php`). **Never deploy it.**
+- `extensions/plg_content_ptpricing/` becomes `pamperins-pricing-plugin.zip`: prices and plans from the office price list
+  (rsup feed, contract in docs/pricing-feed.md) replace the `{ptpricing}…{/ptpricing}` block in the Pricing article; the
+  hand-typed tables inside are the fallback. `setup-site.php --pricing-feed` enables it and adds the tags.
+- `dev/test-idp/router.php`: a fake OpenID provider (and sample `/api/public/pricing` feed) for local testing only (`php -S 0.0.0.0:9000 router.php`). **Never deploy it.**
 - `content/remote-support.html`: the "Get Help Now" page (alias `remote-support`, marker `pt-remote-support v2`). `setup-site.php`
   installs it on fresh sites and replaces the old 1.0 text on existing sites, but never a page edited by hand.
 - `docs/DEPLOY.md`: live-server runbook (Part A test copy at a subdomain, steps 1–7 install, Part B go live).
@@ -73,7 +76,7 @@ See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** E
 ## Build
 
 ```bash
-./build.sh   # -> pamperins-template.zip + pamperins-support-tickets.zip + pamperins-sso-plugin.zip (all gitignored)
+./build.sh   # -> pamperins-template.zip + pamperins-support-tickets.zip + pamperins-sso-plugin.zip + pamperins-pricing-plugin.zip (all gitignored)
 ```
 
 It needs `zip`/`unzip`. With `php-cli` + `php-xml` installed it also validates every XML file and lints every PHP

@@ -14,6 +14,10 @@
  *        [--email=help@pamperins.com] [--phone="(920) 555-0100"] [--content=<folder with remote-support.html>]
  *
  *   --local   test-site shortcuts (no account activation e-mail). Never use on a real site.
+ *   --pricing-feed[=URL]   show prices from the office price list (docs/pricing-feed.md): enables the
+ *             "Content - Pamperins Pricing" plugin and puts the Pricing page's tables between {ptpricing} tags, so they
+ *             are only shown if the price list can't be read. Nothing else on the page changes. URL defaults to
+ *             https://support.pamperins.com/api/public/pricing (http:// only together with --local).
  *
  * @copyright   (C) 2026 Pamperins Tech
  * @license     GNU General Public License version 2 or later
@@ -26,6 +30,8 @@ foreach (\array_slice($_SERVER['argv'] ?? [], 1) as $arg) {
         $opt[$m[1]] = $m[2];
     } elseif ($arg === '--local') {
         $opt['local'] = true;
+    } elseif (preg_match('/^--pricing-feed(?:=(.+))?$/s', $arg, $m)) {
+        $opt['pricing'] = $m[1] ?? '';
     } else {
         fwrite(STDERR, "Unknown option: $arg\n");
         exit(1);
@@ -332,10 +338,70 @@ if ($svc && stripos($svc->introtext, 'PLC') === false) {
     $say('+ Services page section: PLC, HMI & SCADA Programming');
 }
 
+// ---------- Articles must be in Joomla's workflow, or Content → Articles in the admin doesn't list them ----------
+// (Joomla's article list joins #__workflow_associations; articles created by this script before 1.2.2 had no row.)
+$stage = (int) $db->setQuery("SELECT s.id FROM #__workflow_stages s JOIN #__workflows w ON w.id = s.workflow_id
+    WHERE w.extension = 'com_content.article' AND w.default = 1 AND s.default = 1 AND s.published = 1")->loadResult();
+
+if ($stage) {
+    $missing = $db->setQuery("SELECT a.id FROM #__content a LEFT JOIN #__workflow_associations wa
+        ON wa.item_id = a.id AND wa.extension = 'com_content.article' WHERE wa.item_id IS NULL")->loadColumn();
+
+    foreach ($missing as $aid) {
+        $row = (object) ['item_id' => (int) $aid, 'stage_id' => $stage, 'extension' => 'com_content.article'];
+        $db->insertObject('#__workflow_associations', $row);
+    }
+
+    if ($missing) {
+        $say('articles now listed in the admin (Content → Articles): ' . \count($missing) . ' fixed');
+    }
+} else {
+    $say('NOTE: no default article workflow stage found; Content → Articles may not list the pages.');
+}
+
 // ---------- Friendly URLs ----------
 if (!is_file(JPATH_ROOT . '/.htaccess') && is_file(JPATH_ROOT . '/htaccess.txt')) {
     copy(JPATH_ROOT . '/htaccess.txt', JPATH_ROOT . '/.htaccess');
     $say('.htaccess created');
+}
+
+// ---------- Prices from the office price list (only with --pricing-feed) ----------
+if (isset($opt['pricing'])) {
+    $feedUrl = $opt['pricing'];
+    $plugin  = $db->setQuery("SELECT extension_id, params FROM #__extensions WHERE type='plugin' AND folder='content' AND element='ptpricing'")->loadObject();
+
+    if (!$plugin) {
+        $say('NOTE: --pricing-feed: install pamperins-pricing-plugin.zip first. Nothing changed for pricing.');
+    } elseif ($feedUrl !== '' && !preg_match($local ? '#^https?://#i' : '#^https://#i', $feedUrl)) {
+        $say('NOTE: --pricing-feed: the address must start with https:// (http:// only with --local). Nothing changed for pricing.');
+    } else {
+        $pp = json_decode($plugin->params ?: '{}', true) ?: [];
+
+        if ($feedUrl !== '') {
+            $pp['feed_url']   = $feedUrl;
+            $pp['allow_http'] = str_starts_with(strtolower($feedUrl), 'http://') ? '1' : '0';
+        }
+
+        $row = (object) ['extension_id' => (int) $plugin->extension_id, 'enabled' => 1, 'params' => json_encode($pp)];
+        $db->updateObject('#__extensions', $row, 'extension_id');
+        $say('pricing plugin enabled' . ($feedUrl !== '' ? " (price list: $feedUrl)" : ''));
+
+        $pr = $db->setQuery("SELECT id, introtext FROM #__content WHERE alias='pricing'")->loadObject();
+
+        if (!$pr) {
+            $say('NOTE: no Pricing page (alias "pricing") found, so no tags were added.');
+        } elseif (str_contains($pr->introtext, '{ptpricing}')) {
+            $say('Pricing page already uses the office price list');
+        } elseif (($a = stripos($pr->introtext, '<table')) === false || ($b = strripos($pr->introtext, '</table>')) === false) {
+            $say('NOTE: the Pricing page has no tables, so no tags were added. Add {ptpricing}{/ptpricing} where the prices should go.');
+        } else {
+            $b   += \strlen('</table>');
+            $text = substr($pr->introtext, 0, $a) . "<p>{ptpricing}</p>\n" . substr($pr->introtext, $a, $b - $a) . "\n<p>{/ptpricing}</p>" . substr($pr->introtext, $b);
+            $row  = (object) ['id' => (int) $pr->id, 'introtext' => $text, 'modified' => Factory::getDate()->toSql()];
+            $db->updateObject('#__content', $row, 'id');
+            $say('Pricing page: tables now come from the office price list (the typed ones are kept as a backup)');
+        }
+    }
 }
 
 echo "Done. Next: check the site, then edit Pricing, Services and the template's footer hours in the admin.\n";
