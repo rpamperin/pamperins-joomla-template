@@ -58,7 +58,7 @@ feature rows are lined up by `label`.
 - Content plugin `extensions/plg_content_ptpricing/` (`pamperins-pricing-plugin.zip`).
 - In the Pricing article, the hand-typed tables sit between `{ptpricing}` and `{/ptpricing}`. While the feed works,
   that block is replaced with the live tables. If the feed has never worked, the hand-typed tables are shown.
-- The feed is read at most every 10 minutes (setting). The last good copy is kept in
+- The feed is read at most once a minute (setting). The last good copy is kept in
   `administrator/cache/plg_content_ptpricing/feed.json`, so the page doesn't go blank while rsup is down. A broken or
   wrong-version feed never replaces a good copy. Problems go to `administrator/logs/ptpricing.php`.
 - To show an office price change right away: System → Clear Cache (or delete that feed.json).

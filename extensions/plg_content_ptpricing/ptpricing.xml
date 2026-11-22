@@ -21,7 +21,7 @@
 		<fields name="params">
 			<fieldset name="basic">
 				<field name="feed_url" type="url" label="PLG_CONTENT_PTPRICING_FEED_URL" description="PLG_CONTENT_PTPRICING_FEED_URL_DESC" default="https://support.pamperins.com/api/public/pricing" filter="url" />
-				<field name="refresh" type="number" label="PLG_CONTENT_PTPRICING_REFRESH" description="PLG_CONTENT_PTPRICING_REFRESH_DESC" default="10" min="1" max="1440" filter="integer" />
+				<field name="refresh" type="number" label="PLG_CONTENT_PTPRICING_REFRESH" description="PLG_CONTENT_PTPRICING_REFRESH_DESC" default="1" min="1" max="1440" filter="integer" />
 				<field name="services_heading" type="text" label="PLG_CONTENT_PTPRICING_SERVICES_HEADING" default="One-time services" filter="string" />
 				<field name="show_updated" type="radio" label="PLG_CONTENT_PTPRICING_SHOW_UPDATED" default="1" layout="joomla.form.field.radio.switcher">
 					<option value="0">JNO</option>

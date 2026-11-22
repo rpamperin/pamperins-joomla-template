@@ -70,7 +70,7 @@ final class Ptpricing extends CMSPlugin implements SubscriberInterface
         $this->loaded = true;
         $file   = JPATH_CACHE . '/plg_content_ptpricing/feed.json';
         $cached = is_file($file) ? json_decode((string) file_get_contents($file), true) : null;
-        $maxAge = max(1, (int) $this->params->get('refresh', 10)) * 60;
+        $maxAge = max(1, (int) $this->params->get('refresh', 1)) * 60;
 
         if (\is_array($cached) && time() - (int) ($cached['fetched'] ?? 0) < $maxAge) {
             return $this->feed = $cached['feed'];
