@@ -36,7 +36,10 @@ $sitename  = htmlspecialchars($app->get('sitename'), ENT_QUOTES, 'UTF-8');
 $menu      = $app->getMenu()->getActive();
 $pageclass = $menu !== null ? $menu->getParams()->get('pageclass_sfx', '') : '';
 $default   = $app->getMenu()->getDefault($this->language);
-$isHome    = $menu !== null && $default !== null && (int) $menu->id === (int) $default->id;
+// Joomla falls back to the home menu item for pages without their own menu item (e.g. /component/users/registration),
+// so also check that this request really is the home item's page.
+$isHome    = $menu !== null && $default !== null && (int) $menu->id === (int) $default->id
+    && $option === ($default->query['option'] ?? '') && $view === ($default->query['view'] ?? '');
 
 /**
  * Turn a URL from the template settings into a usable href.
@@ -163,10 +166,10 @@ $hours    = trim((string) $params->get('hours', ''));
             <?php endif; ?>
 
             <div class="pt-header__actions">
-                <a class="btn pt-btn pt-btn--accent" href="<?php echo $pt_href($params->get('helpUrl', 'request-support')); ?>">
+                <a class="btn pt-btn pt-btn--accent" href="<?php echo $pt_href($params->get('helpUrl', 'remote-support')); ?>">
                     <?php echo $e($params->get('helpLabel', 'Get Help Now')); ?>
                 </a>
-                <a class="btn pt-btn pt-btn--ghost" href="<?php echo $pt_href($params->get('loginUrl', 'index.php?option=com_users&view=login')); ?>">
+                <a class="btn pt-btn pt-btn--ghost" href="<?php echo $pt_href($params->get('loginUrl', 'https://support.pamperins.com/portal')); ?>">
                     <?php echo $e($params->get('loginLabel', 'Customer Login')); ?>
                 </a>
             </div>

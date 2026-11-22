@@ -175,7 +175,7 @@ HTML, $now, $authorId, $hideInfo);
 $remoteHtml = is_file("$content/remote-support.html") ? file_get_contents("$content/remote-support.html") : '<p>Remote support page — paste content/remote-support.html here.</p>';
 $telDigits  = preg_replace('/[^0-9]/', '', $phone);
 $remoteHtml = str_replace(['tel:+19205550100', '(920) 555-0100', 'help@pamperins.com'], ['tel:+1' . substr($telDigits, -10), $phone, $email], $remoteHtml);
-$remoteId   = pt_article($db, 'Remote Support from Pamperins Tech', 'remote-support', $remoteHtml, $now, $authorId, $hideInfo);
+$remoteId   = pt_article($db, 'Get Help Now', 'remote-support', $remoteHtml, $now, $authorId, $hideInfo);
 
 // ---------- Contact ----------
 $contactId = (int) $q("SELECT id FROM #__contact_details WHERE alias='support'");
@@ -234,8 +234,13 @@ if ($firstRun || $emailGiven) {
     $params['email'] = $email;
 }
 
-if (\in_array($params['helpUrl'] ?? '', ['', 'get-help'], true)) {
-    $params['helpUrl'] = 'request-support';
+if (\in_array($params['helpUrl'] ?? '', ['', 'get-help', 'request-support'], true)) {   // 'request-support' was the 1.0/1.1 default
+    $params['helpUrl'] = 'remote-support';
+}
+
+// Customer Login: the client portal on the support server (CRM) replaces Joomla's own login page (old default)
+if (\in_array($params['loginUrl'] ?? '', ['', 'index.php?option=com_users&view=login'], true)) {
+    $params['loginUrl'] = 'https://support.pamperins.com/portal';
 }
 
 if (\in_array($params['remoteUrl'] ?? '', ['', '#remote-support'], true)) {
@@ -289,6 +294,28 @@ foreach ($db->setQuery("SELECT id, content FROM #__modules WHERE position='pt-se
         $row = (object) ['id' => (int) $mod->id, 'content' => $html];
         $db->updateObject('#__modules', $row, 'id');
         $say('home page service cards updated (module ' . (int) $mod->id . ')');
+    }
+}
+
+// Get Help Now page (alias remote-support): replace the 1.0 default text with v2, but never a page the owner edited
+$rs = $db->setQuery("SELECT id, title, introtext FROM #__content WHERE alias='remote-support'")->loadObject();
+
+if ($rs && !str_contains($rs->introtext, 'pt-remote-support v2')) {
+    $oldDefault = str_contains($rs->introtext, 'Computer trouble? One of our technicians can connect to your computer over the internet')
+        && str_contains($rs->introtext, 'Free diagnostics are available.');
+
+    if ($oldDefault && is_file("$content/remote-support.html")) {
+        $sp   = $params['phone'] ?? $phone;
+        $se   = $params['email'] ?? $email;
+        $html = str_replace(['tel:+19205550100', '(920) 555-0100', 'help@pamperins.com'],
+            ['tel:+1' . substr(preg_replace('/[^0-9]/', '', $sp), -10), $sp, $se], file_get_contents("$content/remote-support.html"));
+        $row  = (object) ['id' => (int) $rs->id, 'introtext' => $html,
+            'title' => $rs->title === 'Remote Support from Pamperins Tech' ? 'Get Help Now' : $rs->title,
+            'modified' => Factory::getDate()->toSql()];
+        $db->updateObject('#__content', $row, 'id');
+        $say('Get Help Now page updated (new version; phone ' . $sp . ', e-mail ' . $se . ')');
+    } else {
+        $say('NOTE: the Remote Support page was edited by hand, so it was NOT replaced. New text: content/remote-support.html');
     }
 }
 

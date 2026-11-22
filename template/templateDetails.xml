@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="template" client="site" method="upgrade">
 	<name>pamperins</name>
-	<version>1.1.0</version>
+	<version>1.2.1</version>
 	<creationDate>2026-11</creationDate>
 	<author>Pamperins Tech</author>
 	<authorUrl>https://pamperins.com</authorUrl>
@@ -74,9 +74,9 @@
 
 			<fieldset name="header" label="TPL_PAMPERINS_FIELDSET_HEADER">
 				<field name="helpLabel" type="text" default="Get Help Now" label="TPL_PAMPERINS_HELP_LABEL" filter="string" />
-				<field name="helpUrl" type="text" default="request-support" label="TPL_PAMPERINS_HELP_URL" description="TPL_PAMPERINS_HELP_URL_DESC" filter="string" />
+				<field name="helpUrl" type="text" default="remote-support" label="TPL_PAMPERINS_HELP_URL" description="TPL_PAMPERINS_HELP_URL_DESC" filter="string" />
 				<field name="loginLabel" type="text" default="Customer Login" label="TPL_PAMPERINS_LOGIN_LABEL" filter="string" />
-				<field name="loginUrl" type="text" default="index.php?option=com_users&amp;view=login" label="TPL_PAMPERINS_LOGIN_URL" filter="string" />
+				<field name="loginUrl" type="text" default="https://support.pamperins.com/portal" label="TPL_PAMPERINS_LOGIN_URL" filter="string" />
 			</fieldset>
 
 			<fieldset name="home" label="TPL_PAMPERINS_FIELDSET_HOME">

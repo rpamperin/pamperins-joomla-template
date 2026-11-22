@@ -35,7 +35,7 @@ See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** E
   - `index.php`: page layout (header, hero, home sections, footer)
   - `script.php`: install script. On first install it copies the logo to `/images/logo.svg` and
     creates the "Home - Service Cards" / "Home - Why Pamperins Tech" modules (positions `pt-services`, `pt-why`).
-  - `html/com_users/`: login, registration and password reset overrides
+  - `html/com_users/`: login, logged-in account, profile, registration and password reset overrides
   - `media/images/logos/`: the five selectable logos (text already turned into shapes; see `branding/`)
 - `extensions/com_ptickets/` becomes `pamperins-support-tickets.zip` (manifest `ptickets.xml`).
   - `admin/src/Helper/SupportTypes.php`: the 8 request types, statuses and priorities
@@ -45,7 +45,16 @@ See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** E
     wording in `site/language/en-GB/com_ptickets.ini`
   - To add a request type: add it to `SupportTypes::TYPES`, create `type_<key>.xml`, add its
     `COM_PTICKETS_TYPE_<KEY>` strings, add it to `admin/forms/filter_tickets.xml`, and add a `.pt-card--t-<key>` icon in user.css
-- `content/remote-support.html`: Remote Support page, pasted into a Joomla article on the live site
+- `extensions/plg_system_ptsso/` becomes `pamperins-sso-plugin.zip` (manifest `ptsso.xml`): single sign-on with the CRM
+  (support.pamperins.com) as the OpenID Connect provider. Adds a "Log in with Pamperins" button to the site and admin login
+  forms; endpoints are `index.php?ptsso=login|callback` (and `administrator/index.php?ptsso=…`), handled in `onAfterRoute`.
+  Links accounts by the `ptsso.sub` row in `#__user_profiles`, else by verified e-mail (rsup client e-mails are not
+  verified, so existing customers use the "Link my support account" card on their account page, `?ptsso=link`).
+  CRM roles map to Joomla groups: `admin` → Administrator; the Manager role is empty by default (Ryan may set `office`).
+  The client secret is typed into the plugin settings by the owner, never committed.
+- `dev/test-idp/router.php`: a fake OpenID provider for local testing only (`php -S 0.0.0.0:9000 router.php`). **Never deploy it.**
+- `content/remote-support.html`: the "Get Help Now" page (alias `remote-support`, marker `pt-remote-support v2`). `setup-site.php`
+  installs it on fresh sites and replaces the old 1.0 text on existing sites, but never a page edited by hand.
 - `docs/DEPLOY.md`: live-server runbook (Part A test copy at a subdomain, steps 1–7 install, Part B go live).
 - `docs/NEW-SERVER.md`: fresh Ubuntu 24.04 server → Joomla 6.2 + this site at a subdomain, then switching pamperins.com over.
 - `deploy/new-server.sh`: the one-shot installer used by NEW-SERVER.md (Apache, PHP 8.3, MariaDB, verified Joomla download,
@@ -64,7 +73,7 @@ See README.md for features. **New server (fresh Joomla): docs/NEW-SERVER.md.** E
 ## Build
 
 ```bash
-./build.sh   # -> pamperins-template.zip + pamperins-support-tickets.zip (both gitignored)
+./build.sh   # -> pamperins-template.zip + pamperins-support-tickets.zip + pamperins-sso-plugin.zip (all gitignored)
 ```
 
 It needs `zip`/`unzip`. With `php-cli` + `php-xml` installed it also validates every XML file and lints every PHP

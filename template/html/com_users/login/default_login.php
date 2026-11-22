@@ -27,7 +27,16 @@ $wa->useScript('keepalive')
 $usersConfig = ComponentHelper::getParams('com_users');
 $tplParams   = Factory::getApplication()->getTemplate(true)->params;
 $phone       = trim((string) $tplParams->get('phone', ''));
-$heading     = $this->params->get('show_page_heading') ? $this->params->get('page_heading') : Text::_('TPL_PAMPERINS_LOGIN_TITLE');
+// Use the menu item's heading only when the menu item is this page; otherwise it is borrowed from Home.
+$ptActive  = \Joomla\CMS\Factory::getApplication()->getMenu()->getActive();
+$ptOwnItem = $ptActive && ($ptActive->query['option'] ?? '') === 'com_users' && ($ptActive->query['view'] ?? '') === 'login';
+$heading   = $ptOwnItem && $this->params->get('show_page_heading') && $this->params->get('page_heading')
+    ? $this->params->get('page_heading') : Text::_('TPL_PAMPERINS_LOGIN_TITLE');
+
+// Same for the browser tab title (respects Global Configuration "Site Name in Page Titles")
+if (!$ptOwnItem) {
+    $this->setDocumentTitle($heading);
+}
 ?>
 <div class="com-users-login login pt-auth">
     <div class="pt-auth__card">
