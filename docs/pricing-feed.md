@@ -42,7 +42,13 @@ shows them automatically through the `plg_content_ptpricing` plugin.
 | feature `value` | text, or `true` (shown as ✓) / `false` (shown as —) |
 | `price_text` | when not empty, shown instead of the number ("Call for a quote", "from $45") |
 | `featured` | highlights one plan as "Most popular" |
-| `price_note` | optional line under the tables (tax, travel) |
+| `price_note` | optional line under the tables (tax, travel); not shown when empty |
+| plan `summary`, `notes` | optional short text rows under the plan prices (empty is fine; so are empty `features`) |
+| `coupons` (and any other field) | ignored by the website |
+
+rsup: office portal → Prices (table `price_items`, shared with invoices); only active items marked "shown" are
+published (rsup PR #24, docs/pricing.md "For the website"). A version-1 feed with no plans and no services counts as
+"no price list yet", so the hand-typed tables stay.
 
 Arrays are already in display order. `id`s are stable slugs. Plans are shown side by side in one comparison table;
 feature rows are lined up by `label`.

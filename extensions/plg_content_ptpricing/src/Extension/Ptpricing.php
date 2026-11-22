@@ -172,6 +172,7 @@ final class Ptpricing extends CMSPlugin implements SubscriberInterface
                 'price_text'  => $str($p['price_text'] ?? '', 80),
                 'featured'    => !empty($p['featured']),
                 'summary'     => $str($p['summary'] ?? ''),
+                'notes'       => $str($p['notes'] ?? '', 300),
                 'features'    => $features,
             ];
         }
@@ -225,11 +226,16 @@ final class Ptpricing extends CMSPlugin implements SubscriberInterface
 
             $html .= '</tr>';
 
-            if (array_filter(array_column($plans, 'summary'))) {
-                $html .= '<tr><th scope="row"></th>';
+            // Optional text rows under the price: the plan's summary, then its notes (only when some plan has one)
+            foreach (['summary', 'notes'] as $key) {
+                if (!array_filter(array_column($plans, $key))) {
+                    continue;
+                }
+
+                $html .= '<tr class="pt-pricing__' . $key . '"><th scope="row"></th>';
 
                 foreach ($plans as $p) {
-                    $html .= '<td' . ($p['featured'] ? ' class="featured"' : '') . '>' . $e($p['summary']) . '</td>';
+                    $html .= '<td' . ($p['featured'] ? ' class="featured"' : '') . '>' . $e($p[$key]) . '</td>';
                 }
 
                 $html .= '</tr>';
